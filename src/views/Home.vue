@@ -3,11 +3,15 @@
     <v-parallax height="300" fluid dark src="@/assets/banner_flower.jpg">
       <v-row align="center" justify="center">
         <v-col class="text-center" cols="12">
-          <h1 class="quad-text-shadow display-1 font-weight-thin mb-4">
-            Infertility App
+          <h1
+            class="quad-text-shadow text-center display-1 font-weight-thin mb-4"
+          >
+            <transition name="fade" mode="out-in">
+              <span :key="mainTitle">{{ mainTitle }}</span>
+            </transition>
           </h1>
           <h4 class="subheading double-text-shadow">
-            오늘도 수고한 당신을 응원합니다
+            <div></div>
           </h4>
         </v-col>
       </v-row>
@@ -121,7 +125,30 @@
 
 <script>
 export default {
+  data: () => ({
+    mainTitle: "당신은 세상에서 가장 소중한 사람입니다",
+    mainTitleList: [
+      "당신은 세상에서 가장 소중한 사람입니다",
+      "당신의 존재에 늘 감사합니다.",
+      "오늘 하루도 고생 많았어요.",
+      "당신의 앞날을 늘 응원합니다.",
+      "오늘도 좋은 하루 보내세요.",
+      "오늘 하루도 애쓰셨어요.",
+    ],
+  }),
   components: {},
+  created() {
+    this.loopText();
+  },
+  methods: {
+    loopText() {
+      let i = 1;
+      setInterval(() => {
+        this.mainTitle = this.mainTitleList[i++];
+        i = i % 6;
+      }, 5000);
+    },
+  },
 };
 </script>
 <style>
@@ -131,5 +158,17 @@ export default {
 .quad-text-shadow {
   text-shadow: 0px 0px 4px black, 0px 0px 4px black, 0px 0px 4px black,
     0px 0px 4px black;
+  word-break: keep-all;
+}
+
+.fade-enter-active {
+  transition: opacity 0.5s;
+}
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
