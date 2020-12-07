@@ -1,12 +1,31 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-      <v-toolbar-title>Infertility</v-toolbar-title>
+      <!--모바일일경우 -->
+      <template v-if="$vuetify.breakpoint.xsOnly">
+        <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+
+        <v-toolbar-title @click="$router.push('/')"
+          >Infertility</v-toolbar-title
+        >
+      </template>
+      <template v-else>
+        <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+
+        <v-toolbar-title @click="$router.push('/')"
+          >Infertility</v-toolbar-title
+        >
+      </template>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" absolute temporary>
       <v-list nav dense>
+        <v-list-item link to="/" active-class="teal--text">
+          <v-list-item-icon>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
         <v-list-group no-action prepend-icon="mdi-information-outline">
           <template v-slot:activator>
             <v-list-item-content>
@@ -42,10 +61,10 @@
                 <v-list-item-title>신체 건강</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item link>
+            <v-list-item link to="/boards/1">
               <v-list-item-title> 난임과 신체 건강 </v-list-item-title>
             </v-list-item>
-            <v-list-item link>
+            <v-list-item link to="/boards/2">
               <v-list-item-title>신체 건강 중재</v-list-item-title>
             </v-list-item>
           </v-list-group>
@@ -57,11 +76,11 @@
               </v-list-item-content>
             </template>
 
-            <v-list-item link>
+            <v-list-item link to="/boards/3">
               <v-list-item-title> 난임과 정서적 건강 </v-list-item-title>
             </v-list-item>
 
-            <v-list-item link>
+            <v-list-item link to="/boards/4">
               <v-list-item-title> 정서 건강 중재 </v-list-item-title>
             </v-list-item>
 
@@ -69,10 +88,10 @@
               <v-list-item-title> 나의 심리 상태 검사 </v-list-item-title>
             </v-list-item>
           </v-list-group>
-          <v-list-item link>
+          <v-list-item link to="/boards/5">
             <v-list-item-title>성 건강</v-list-item-title>
           </v-list-item>
-          <v-list-item link>
+          <v-list-item link to="/boards/6">
             <v-list-item-title>생활습관</v-list-item-title>
           </v-list-item>
         </v-list-group>
@@ -82,18 +101,28 @@
     <v-main>
       <router-view></router-view>
     </v-main>
+
     <v-footer padless>
-      <v-card flat tile class="text-left" width="100%">
-        <v-card-text class="pt-0">
-          <v-row justify="center">
-            <v-col cols="11" md="12" lg="9">
-              <v-divider class="pb-5"></v-divider>
-              <div>
-                (17058) 경기도 용인시 처인구 명지로 116 ( TEL : 1577-0020)
-              </div>
-              <div>TEL : 000-000-0000 FAX : 000-000-0000</div>
-              <div>COPYRIGHTⓒ(C) MYONGJI UNIV. ALL RIGHTS RESERVED.</div>
-            </v-col>
+      <v-card flat width="100%" tile class="grey darken-3 mt-4">
+        <v-divider></v-divider>
+        <v-card-text class="max-width mx-auto py-5 grey--text text--lighten-3">
+          <v-row>
+            <v-col cols="12" md="1"
+              ><img src="@/assets/mju_logo.png" style="width: 64px"
+            /></v-col>
+            <v-col
+              cols="12"
+              md="11"
+              style="line-height: 1.8; font-size: 0.72rem"
+            >
+              <span
+                >(17058) 경기도 용인시 처인구 명지로 116 ( TEL : 1577-0020)<br
+              /></span>
+              <span>TEL : 000-000-0000 FAX : 000-000-0000 <br /></span>
+              <span
+                ><br />COPYRIGHTⓒ(C) MYONGJI UNIV. ALL RIGHTS RESERVED.</span
+              ></v-col
+            >
           </v-row>
         </v-card-text>
       </v-card>
@@ -115,5 +144,16 @@ export default {
 @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
 * {
   font-family: "Noto Sans KR", sans-serif !important;
+}
+
+div.container {
+  max-width: 1164px;
+}
+.v-main {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.max-width {
+  max-width: 1164px;
 }
 </style>

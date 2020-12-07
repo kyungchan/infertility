@@ -17,106 +17,79 @@
       </v-row>
     </v-parallax>
     <v-container>
-      <v-row justify="center">
-        <v-col cols="11" md="12" lg="9">
-          <v-row>
-            <v-col cols="12" sm="12" md="6">
-              <v-card tile outlined>
-                <v-card-title
-                  primary-title
-                  class="font-weight-medium indigo--text"
-                >
-                  생활습관
-                  <v-spacer></v-spacer
-                  ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
-                </v-card-title>
-                <v-card-text>
-                  <v-alert
-                    tile
-                    colored-border
-                    color="indigo"
-                    border="left"
-                    elevation="0"
-                  >
-                    남성 난임 치료에서 효과적인 식품보조제</v-alert
-                  >
-                  <v-alert
-                    tile
-                    colored-border
-                    color="indigo"
-                    border="left"
-                    elevation="0"
-                  >
-                    남성 난임 치료에서 효과적인 식품보조제</v-alert
-                  >
-                </v-card-text>
-              </v-card> </v-col
-            ><v-col cols="12" sm="12" md="6">
-              <v-card tile outlined>
-                <v-card-title
-                  primary-title
-                  class="font-weight-medium amber--text"
-                >
-                  정서건강
-                  <v-spacer></v-spacer
-                  ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
-                </v-card-title>
-                <v-card-text>
-                  <v-alert
-                    tile
-                    colored-border
-                    color="amber "
-                    border="left"
-                    elevation="0"
-                  >
-                    스트레스 삶의 질과 여성 난임의 연관성</v-alert
-                  >
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="12" md="6">
-              <v-card tile outlined>
-                <v-card-title
-                  tile
-                  primary-title
-                  class="font-weight-medium orange--text"
-                >
-                  성건강<v-spacer></v-spacer
-                  ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
-                </v-card-title>
-                <v-card-text>
-                  <v-alert
-                    tile
-                    colored-border
-                    color="orange"
-                    border="left"
-                    elevation="0"
-                  >
-                    스트레스 삶의 질과 여성 난임의 연관성</v-alert
-                  >
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="12" md="6">
-              <v-card tile outlined>
-                <v-card-title primary-title class="font-weight- purple--text">
-                  신체건강<v-spacer></v-spacer
-                  ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
-                </v-card-title>
-                <v-card-text>
-                  <v-alert
-                    tile
-                    colored-border
-                    color="purple"
-                    border="left"
-                    elevation="0"
-                  >
-                    스트레스 삶의 질과 여성 난임의 연관성</v-alert
-                  >
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+      <v-row>
+        <v-col cols="12" sm="12" md="6">
+          <v-card tile outlined>
+            <v-card-title primary-title class="font-weight-medium indigo--text">
+              생활습관
+              <v-spacer></v-spacer
+              ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>
+              <list-item
+                title="남성 난임 치료에서 효과적인 식품보조제"
+                date="2020-11-23"
+                color="indigo"
+              ></list-item>
+            </v-card-text>
+          </v-card> </v-col
+        ><v-col cols="12" sm="12" md="6">
+          <v-card tile outlined>
+            <v-card-title primary-title class="font-weight-medium amber--text">
+              정서건강
+              <v-spacer></v-spacer
+              ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>
+              <list-item
+                title="스트레스 삶의 질과 여성 난임의 연관성"
+                date="2019-11-25"
+                color="amber"
+              ></list-item>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="12" md="6">
+          <v-card tile outlined>
+            <v-card-title
+              tile
+              primary-title
+              class="font-weight-medium orange--text"
+            >
+              성건강<v-spacer></v-spacer
+              ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-alert
+                tile
+                colored-border
+                color="orange"
+                border="left"
+                elevation="0"
+              >
+                스트레스 삶의 질과 여성 난임의 연관성</v-alert
+              >
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="12" md="6">
+          <v-card tile outlined>
+            <v-card-title primary-title class="font-weight- purple--text">
+              신체건강<v-spacer></v-spacer
+              ><v-btn color="black" icon><v-icon>mdi-plus</v-icon></v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-alert
+                tile
+                colored-border
+                color="purple"
+                border="left"
+                elevation="0"
+              >
+                스트레스 삶의 질과 여성 난임의 연관성</v-alert
+              >
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -124,6 +97,7 @@
 </template>
 
 <script>
+import ListItem from "../components/home/ListItem";
 export default {
   data: () => ({
     mainTitle: "당신은 세상에서 가장 소중한 사람입니다",
@@ -136,7 +110,7 @@ export default {
       "오늘 하루도 애쓰셨어요.",
     ],
   }),
-  components: {},
+  components: { ListItem },
   created() {
     this.loopText();
   },
