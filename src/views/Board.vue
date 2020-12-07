@@ -12,6 +12,20 @@
       </v-row>
     </v-parallax>
     <v-container>
+      <v-fab-transition>
+        <v-btn
+          to="/editor"
+          v-show="!hidden"
+          color="pink"
+          fixed
+          dark
+          bottom
+          right
+          fab
+        >
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+      </v-fab-transition>
       <v-row>
         <v-spacer></v-spacer>
         <v-col cols="7" sm="5" md="4" lg="3" class="d-flex py-0">

@@ -10,179 +10,187 @@
     </v-row>
     <v-text-field
       id="editor-title"
+      class="elevation-1 my-2"
       placeholder="Title"
       flat
       solo
-      class="my-2"
       hide-details="auto"
     ></v-text-field>
-    <div class="editor">
-      <editor-menu-bubble
-        class="menububble"
-        :editor="editor"
-        @hide="hideLinkMenu"
-        v-slot="{ commands, isActive, getMarkAttrs, menu }"
-      >
-        <div
-          class="menububble"
-          :class="{ 'is-active': menu.isActive }"
-          :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
-        >
-          <form
-            class="menububble__form"
-            v-if="linkMenuIsActive"
-            @submit.prevent="setLinkUrl(commands.link, linkUrl)"
+    <v-card>
+      <v-card-text>
+        <div class="editor">
+          <editor-menu-bubble
+            class="menububble"
+            :editor="editor"
+            @hide="hideLinkMenu"
+            v-slot="{ commands, isActive, getMarkAttrs, menu }"
           >
-            <input
-              class="menububble__input"
-              type="text"
-              v-model="linkUrl"
-              placeholder="https://"
-              ref="linkInput"
-              @keydown.esc="hideLinkMenu"
-            />
-            <button
-              class="menububble__button"
-              @click="setLinkUrl(commands.link, null)"
-              type="button"
+            <div
+              class="menububble"
+              :class="{ 'is-active': menu.isActive }"
+              :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
             >
-              <icon name="remove" />
-            </button>
-          </form>
+              <form
+                class="menububble__form"
+                v-if="linkMenuIsActive"
+                @submit.prevent="setLinkUrl(commands.link, linkUrl)"
+              >
+                <input
+                  class="menububble__input"
+                  type="text"
+                  v-model="linkUrl"
+                  placeholder="https://"
+                  ref="linkInput"
+                  @keydown.esc="hideLinkMenu"
+                />
+                <button
+                  class="menububble__button"
+                  @click="setLinkUrl(commands.link, null)"
+                  type="button"
+                >
+                  <icon name="remove" />
+                </button>
+              </form>
 
-          <template v-else>
-            <button
-              class="menububble__button"
-              @click="showLinkMenu(getMarkAttrs('link'))"
-              :class="{ 'is-active': isActive.link() }"
-            >
-              <span>{{ isActive.link() ? "Update Link" : "Add Link" }}</span>
-              <icon name="link" />
-            </button>
-          </template>
+              <template v-else>
+                <button
+                  class="menububble__button"
+                  @click="showLinkMenu(getMarkAttrs('link'))"
+                  :class="{ 'is-active': isActive.link() }"
+                >
+                  <span>{{
+                    isActive.link() ? "Update Link" : "Add Link"
+                  }}</span>
+                  <icon name="link" />
+                </button>
+              </template>
+            </div>
+          </editor-menu-bubble>
+
+          <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
+            <div class="menubar">
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.bold() }"
+                @click="commands.bold"
+              >
+                <v-icon>mdi-format-bold</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.italic() }"
+                @click="commands.italic"
+              >
+                <v-icon>mdi-format-italic</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.strike() }"
+                @click="commands.strike"
+              >
+                <v-icon>mdi-format-strikethrough</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.underline() }"
+                @click="commands.underline"
+              >
+                <v-icon>mdi-format-underline</v-icon>
+              </button>
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.paragraph() }"
+                @click="commands.paragraph"
+              >
+                <v-icon>mdi-format-paragraph</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                @click="commands.heading({ level: 1 })"
+              >
+                <v-icon>mdi-format-header-1</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                @click="commands.heading({ level: 2 })"
+              >
+                <v-icon>mdi-format-header-2</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                @click="commands.heading({ level: 3 })"
+              >
+                <v-icon>mdi-format-header-3</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.bullet_list() }"
+                @click="commands.bullet_list"
+              >
+                <v-icon>mdi-format-list-bulleted</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.ordered_list() }"
+                @click="commands.ordered_list"
+              >
+                <v-icon>mdi-format-list-numbered</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.blockquote() }"
+                @click="commands.blockquote"
+              >
+                <v-icon>mdi-format-quote-open</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                :class="{ 'is-active': isActive.code_block() }"
+                @click="commands.code_block"
+              >
+                <v-icon>mdi-code-tags</v-icon>
+              </button>
+
+              <button class="menubar__button" @click="commands.horizontal_rule">
+                <v-icon>mdi-minus</v-icon>
+              </button>
+
+              <button class="menubar__button" @click="commands.undo">
+                <v-icon>mdi-undo</v-icon>
+              </button>
+
+              <button class="menubar__button" @click="commands.redo">
+                <v-icon>mdi-redo</v-icon>
+              </button>
+
+              <button
+                class="menubar__button"
+                @click="showImagePrompt(commands.image)"
+              >
+                <v-icon>mdi-image</v-icon>
+              </button>
+            </div>
+          </editor-menu-bar>
+          <div class="mb-3">
+            <v-divider></v-divider>
+          </div>
+          <editor-content class="editor__content mx-3" :editor="editor" />
         </div>
-      </editor-menu-bubble>
-
-      <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-        <div class="menubar">
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.bold() }"
-            @click="commands.bold"
-          >
-            <v-icon>mdi-format-bold</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.italic() }"
-            @click="commands.italic"
-          >
-            <v-icon>mdi-format-italic</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.strike() }"
-            @click="commands.strike"
-          >
-            <v-icon>mdi-format-strikethrough</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.underline() }"
-            @click="commands.underline"
-          >
-            <v-icon>mdi-format-underline</v-icon>
-          </button>
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.paragraph() }"
-            @click="commands.paragraph"
-          >
-            <v-icon>mdi-format-paragraph</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-            @click="commands.heading({ level: 1 })"
-          >
-            <v-icon>mdi-format-header-1</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-            @click="commands.heading({ level: 2 })"
-          >
-            <v-icon>mdi-format-header-2</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-            @click="commands.heading({ level: 3 })"
-          >
-            <v-icon>mdi-format-header-3</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.bullet_list() }"
-            @click="commands.bullet_list"
-          >
-            <v-icon>mdi-format-list-bulleted</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.ordered_list() }"
-            @click="commands.ordered_list"
-          >
-            <v-icon>mdi-format-list-numbered</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.blockquote() }"
-            @click="commands.blockquote"
-          >
-            <v-icon>mdi-format-quote-open</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.code_block() }"
-            @click="commands.code_block"
-          >
-            <v-icon>mdi-code-tags</v-icon>
-          </button>
-
-          <button class="menubar__button" @click="commands.horizontal_rule">
-            <v-icon>mdi-minus</v-icon>
-          </button>
-
-          <button class="menubar__button" @click="commands.undo">
-            <v-icon>mdi-undo</v-icon>
-          </button>
-
-          <button class="menubar__button" @click="commands.redo">
-            <v-icon>mdi-redo</v-icon>
-          </button>
-
-          <button
-            class="menubar__button"
-            @click="showImagePrompt(commands.image)"
-          >
-            <v-icon>mdi-image</v-icon>
-          </button>
-        </div>
-      </editor-menu-bar>
-
-      <editor-content class="editor__content mx-3" :editor="editor" />
-    </div>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
