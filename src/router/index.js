@@ -35,9 +35,10 @@ const routes = [
     props: (route) => ({ board: boards[route.params.id - 1] }),
   },
   {
-    path: "/:board/:articleId",
+    path: "/boards/:id/:articleId",
     name: "Article",
     component: Article,
+    props: (route) => ({ board: boards[route.params.id - 1] }),
   },
 ];
 

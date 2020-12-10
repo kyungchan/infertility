@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    <div class="text-subtitle-2">난임생활정보</div>
+    <router-link class="text-subtitle-2 text-decoration-none" to="/">{{
+      board.name
+    }}</router-link>
     <div class="text-h5 mt-3 font-weight-bold" id="title">
       인공수정 이전 난임 여성들을 위한 체중 감소 중재의 효과
     </div>
@@ -13,6 +15,8 @@
   </v-container>
 </template>
 <script>
+const apiPrefix = "/api";
+
 import { Editor, EditorContent } from "tiptap";
 import {
   Blockquote,
@@ -36,6 +40,7 @@ import {
 } from "tiptap-extensions";
 export default {
   components: { EditorContent },
+  props: ["board"],
   data() {
     return { editor: null };
   },
