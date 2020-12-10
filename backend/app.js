@@ -3,7 +3,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
-const indexRouter = require("./routes/index");
+const postsRouter = require("./routes/posts");
 const usersRouter = require("./routes/users");
 
 const dbconnect = require("./modules/dbconnect");
@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 dbconnect();
 
-app.use("/", indexRouter);
+app.use("/posts", postsRouter);
 app.use("/users", usersRouter);
 
 module.exports = app;

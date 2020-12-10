@@ -18,7 +18,7 @@
       </template>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" absolute temporary>
+    <v-navigation-drawer v-model="drawer" app temporary>
       <v-list nav dense>
         <v-list-item link to="/" active-class="teal--text">
           <v-list-item-icon>
@@ -99,7 +99,9 @@
     </v-navigation-drawer>
 
     <v-main>
-      <router-view></router-view>
+      <transition :key="$route.fullPath" name="fade" mode="out-in">
+        <router-view></router-view>
+      </transition>
     </v-main>
 
     <v-footer padless>

@@ -13,6 +13,7 @@ module.exports = () => {
       .connect(`${process.env.MONGO_URI}`, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useFindAndModify: false,
         auth: { authSource: process.env.MONGO_AUTH_DB },
         user: process.env.MONGO_ID,
         pass: process.env.MONGO_PWD,

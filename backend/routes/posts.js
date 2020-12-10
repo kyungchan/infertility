@@ -1,36 +1,43 @@
-const tag = "[boards.js]";
-
-import sanitizeHtml from "sanitize-html";
-
 const express = require("express");
 const router = express.Router();
 
 const boardModel = require("../odm/post");
 
-const getPreview = (content) => {
-  return sanitizeHtml(content).substr(0, 100);
-};
+const tag = "[boards.js]";
 
 router.get("/:boardCode", function (req, res) {
-  const page = req.params.page || 1;
+  const page = req.query.page || 1;
   boardModel
     .find({ boardCode: req.params.boardCode })
-    .skip(10 * (page - 1))
-    .limit(10)
-    .then((result) => {
-      res.statusCode(200).json(result);
+    .countDocuments()
+    .then((count) => {
+      boardModel
+        .find({ boardCode: req.params.boardCode })
+        .sort({ _id: -1 })
+        .skip(10 * (page - 1))
+        .limit(10)
+        .then((result) => {
+          res.status(200).json({ posts: result, count: count });
+        })
+        .catch((err) => {
+          console.log(tag, err);
+          res.sendStatus(404);
+        });
     })
     .catch((err) => {
       console.log(tag, err);
-      res.sendStatus(404);
+      res.sendStatus(400);
     });
 });
 
 router.post("/:boardCode", function (req, res) {
   boardModel
-    .create({ ...req.params, preview: sanitizeHtml(req.params.content) })
-    .then(() => {
-      res.sendStatus(201);
+    .create({
+      ...req.body,
+      boardCode: req.params.boardCode,
+    })
+    .then((result) => {
+      res.status(201).json({ _id: result._id });
     })
     .catch((err) => {
       res.sendStatus(400);

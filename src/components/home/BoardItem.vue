@@ -5,7 +5,7 @@
       {{ title }}
     </v-card-title>
     <v-card-text>
-      <div class="text--secondary caption">{{ preview }}</div>
+      <div class="text--secondary caption preview">{{ preview }}</div>
       <div class="text--secondary caption">
         {{ `${date}${view ? " | 조회 " + view : ""}` }}
       </div></v-card-text
@@ -20,11 +20,11 @@ export default {
 </script>
 
 <style scoped>
-/*
-.v-card__title {
-  display: block;
-  white-space: nowrap;
+.preview {
   overflow: hidden;
   text-overflow: ellipsis;
-}*/
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
 </style>

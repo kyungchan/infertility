@@ -14,8 +14,7 @@
     <v-container>
       <v-fab-transition>
         <v-btn
-          to="/editor"
-          v-show="!hidden"
+          :to="`${board.code}/editor`"
           color="pink"
           fixed
           dark
@@ -34,61 +33,30 @@
         </v-col>
       </v-row>
       <ul class="pa-0 ma-0">
-        <li>
-          <board-item
-            title="남성 난임 치료에서 효과적인 식품보조제"
-            preview="남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제..."
-            date="2020-11-23"
-            view="200"
-            color="indigo"
-          ></board-item>
-        </li>
-        <li>
-          <board-item
-            title="남성 난임 치료에서 효과적인 식품보조제"
-            preview="남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제..."
-            date="2020-11-23"
-            view="200"
-            color="indigo"
-          ></board-item>
-        </li>
-        <li>
-          <board-item
-            title="남성 난임 치료에서 효과적인 식품보조제"
-            preview="남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제..."
-            date="2020-11-23"
-            color="indigo"
-          ></board-item>
-        </li>
-        <li>
-          <board-item
-            title="남성 난임 치료에서 효과적인 식품보조제"
-            preview="남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제..."
-            date="2020-11-23"
-            color="indigo"
-          ></board-item>
-        </li>
-        <li>
-          <board-item
-            title="남성 난임 치료에서 효과적인 식품보조제"
-            preview="남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제..."
-            date="2020-11-23"
-            color="indigo"
-          ></board-item>
-        </li>
-        <li>
-          <board-item
-            title="남성 난임 치료에서 효과적인 식품보조제"
-            preview="남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제남성 난임 치료에서 효과적인 식품보조제..."
-            date="2020-11-23"
-            color="indigo"
-          ></board-item>
+        <div v-show="!posts.length" class="py-10 text-center">
+          작성된 글이 없습니다.
+        </div>
+
+        <li v-for="post in posts" :key="post._id">
+          <router-link
+            :to="`${post.boardCode}/${post._id}`"
+            class="text-decoration-none"
+          >
+            <board-item
+              :title="post.title"
+              :preview="post.preview"
+              :date="post.createdAt"
+              :view="post.view"
+              color="indigo"
+            ></board-item
+          ></router-link>
         </li>
       </ul>
       <v-pagination
         class="elevation-0"
         v-model="page"
-        :length="3"
+        @input="onPageChange"
+        :length="parseInt(total / 10) + (total % 10 ? 1 : 0)"
       ></v-pagination>
     </v-container>
   </div>
@@ -96,13 +64,55 @@
 
 <script>
 import BoardItem from "../components/home/BoardItem";
+import sanitizeHtml from "sanitize-html";
+import axios from "axios";
+
+const apiPrefix = "/api"; // production mode를 구분
+
 export default {
   components: { BoardItem },
   props: ["board"],
   data: () => ({
-    page: 5,
-    items: [{ no: 1, name: "rwer" }],
+    page: 1,
+    total: 0,
+    posts: [],
   }),
+  beforeRouteUpdate(to, from, next) {
+    axios
+      .get(`${apiPrefix}/posts/${to.params.id}?page=${to.query.page || 1}`)
+      .then((result) => {
+        console.log(result.data);
+        this.posts = result.data.posts;
+        this.total = result.data.count;
+        this.page = to.query.page * 1 || 1;
+        next();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+  beforeRouteEnter(to, from, next) {
+    axios
+      .get(`${apiPrefix}/posts/${to.params.id}?page=${to.query.page || 1}`)
+      .then((result) => {
+        next((vm) => {
+          vm.posts = result.data.posts;
+          vm.posts.forEach((e) => {
+            e.preview = sanitizeHtml(e.content, { allowedTags: [] });
+          });
+          vm.total = result.data.count;
+          vm.page = to.query.page * 1 || 1;
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+  methods: {
+    onPageChange(page) {
+      this.$router.push(`${this.$route.path}?page=${page}`);
+    },
+  },
   computed: {
     headers() {
       return [

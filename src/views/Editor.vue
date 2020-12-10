@@ -1,7 +1,14 @@
 <template>
   <v-container>
     <v-row class="mx-3 my-5" align="center">
-      <h2 class="mb-0">글 작성</h2>
+      <v-col cols="12" class="pa-0">
+        <router-link
+          class="text-subtitle-2 text-decoration-none"
+          :to="{ name: 'Board', params: { boardId: board.id } }"
+          >{{ board.name }}</router-link
+        >
+      </v-col>
+      <h2 class="mt-1 ma-0">글 작성</h2>
       <v-spacer></v-spacer>
       <v-btn color="primary" class="mr-2" depressed tile @click="onPublish"
         >등록</v-btn
@@ -15,6 +22,7 @@
       flat
       solo
       hide-details="auto"
+      v-model="title"
     ></v-text-field>
     <v-card>
       <v-card-text>
@@ -216,14 +224,21 @@ import {
   History,
   Placeholder,
 } from "tiptap-extensions";
+
+const apiPrefix = "/api"; // production mode를 구분
+
 export default {
   components: {
     EditorContent,
     EditorMenuBubble,
     EditorMenuBar,
   },
+  props: ["board"],
   data() {
     return {
+      title: "",
+      content: "",
+      html: "",
       linkUrl: null,
       linkMenuIsActive: false,
       editor: new Editor({
@@ -254,9 +269,9 @@ export default {
           new History(),
         ],
         onUpdate: ({ getHTML }) => {
-          this.html = getHTML();
-          if (this.html === "<p></p>") this.content = "";
-          else this.content = this.html;
+          const html = getHTML();
+          if (html === "<p></p>") this.content = "";
+          else this.content = html;
         },
       }),
     };
@@ -272,7 +287,17 @@ export default {
       }
     },
     onPublish() {
-      console.log(this.content);
+      this.$axios
+        .post(`${apiPrefix}/posts/${this.board.code}`, {
+          title: this.title,
+          content: this.content,
+        })
+        .then((result) => {
+          this.$router.replace(`./${result.data._id}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     showLinkMenu(attrs) {
       this.linkUrl = attrs.href;

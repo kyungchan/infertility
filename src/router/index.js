@@ -9,12 +9,12 @@ import Article from "..//views/Article.vue";
 Vue.use(VueRouter);
 
 const boards = [
-  { id: "health", name: "난임과 신체 건강" },
-  { id: "health-mediate", name: "신체 건강 중재" },
-  { id: "emotion", name: "난임과 정서적 건강" },
-  { id: "emotion-mediate", name: "정서 건강 중재" },
-  { id: "sexual-health", name: "성 건강" },
-  { id: "lifestyle", name: "생활습관" },
+  { code: "1", name: "난임과 신체 건강" },
+  { code: "2", name: "신체 건강 중재" },
+  { code: "3", name: "난임과 정서적 건강" },
+  { code: "4", name: "정서 건강 중재" },
+  { code: "5", name: "성 건강" },
+  { code: "6", name: "생활습관" },
 ];
 
 const routes = [
@@ -24,18 +24,19 @@ const routes = [
     component: Home,
   },
   {
-    path: "/editor",
-    name: "Editor",
-    component: Editor,
-  },
-  {
     path: "/boards/:id",
     name: "Board",
     component: Board,
     props: (route) => ({ board: boards[route.params.id - 1] }),
   },
   {
-    path: "/boards/:id/:articleId",
+    path: "/boards/:id/editor",
+    name: "Editor",
+    component: Editor,
+    props: (route) => ({ board: boards[route.params.id - 1] }),
+  },
+  {
+    path: "/boards/:id/:postId",
     name: "Article",
     component: Article,
     props: (route) => ({ board: boards[route.params.id - 1] }),

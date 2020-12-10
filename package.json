@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
+    "sanitize-html": "^2.2.0",
     "tiptap": "^1.30.0",
     "tiptap-extensions": "^1.33.2",
     "vue": "^2.6.11",
