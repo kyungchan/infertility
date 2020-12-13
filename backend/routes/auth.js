@@ -4,15 +4,11 @@ const router = express.Router();
 const auth = require("../modules/authorization.js");
 const userModel = require("../odm/user.js");
 
-const dotenv = require("dotenv");
-dotenv.config();
 router.post("/check", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       res.status(200).json({
-        userId: decoded.userId,
-        userName: decoded.userName,
         rule: decoded.rule,
       });
     })
@@ -29,7 +25,6 @@ router.post("/refresh", function (req, res) {
       auth
         .createToken({
           userId: decoded.userId,
-          userName: decoded.userName,
           rule: decoded.rule,
         })
         .then((token) => {
@@ -41,8 +36,6 @@ router.post("/refresh", function (req, res) {
             .status(200)
             .json({
               user: {
-                userId: decoded.userId,
-                userName: decoded.userName,
                 rule: decoded.rule,
               },
             });
@@ -73,7 +66,6 @@ router.post("/signin", function (req, res) {
           auth
             .createToken({
               userId: user.userId,
-              userName: user.userName,
               rule: user.rule,
             })
             .then((token) => {
@@ -85,8 +77,6 @@ router.post("/signin", function (req, res) {
                 .status(200)
                 .json({
                   user: {
-                    userId: user.userId,
-                    userName: user.userName,
                     rule: user.rule,
                   },
                 });

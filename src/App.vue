@@ -1,21 +1,31 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <!--모바일일경우 -->
-      <template v-if="$vuetify.breakpoint.xsOnly">
-        <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-toolbar-title @click="$router.push('/')">Infertility</v-toolbar-title>
 
-        <v-toolbar-title @click="$router.push('/')"
-          >Infertility</v-toolbar-title
-        >
-      </template>
-      <template v-else>
-        <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-spacer></v-spacer>
 
-        <v-toolbar-title @click="$router.push('/')"
-          >Infertility</v-toolbar-title
-        >
-      </template>
+      <v-menu offset-y v-if="userRule == 'admin'">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="primary" elevation="0" v-bind="attrs" v-on="on">
+            Admin
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item dense>
+            <v-list-item-title
+              ><v-icon left>mdi-account-circle</v-icon>Admin
+              Page</v-list-item-title
+            >
+          </v-list-item>
+          <v-list-item @click="onSignOut" dense>
+            <v-list-item-title
+              ><v-icon left>mdi-logout</v-icon>Sign Out</v-list-item-title
+            >
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" app temporary>
@@ -139,6 +149,11 @@ export default {
   data: () => ({
     drawer: false,
   }),
+  methods: {
+    onSignOut() {
+      this.$store.commit("signOut");
+    },
+  },
   computed: {
     userRule() {
       return this.$store.state.rule;

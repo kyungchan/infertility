@@ -46,7 +46,7 @@
 </template>
 
 <script>
-const apiPrefix = "/api"; // production mode를 구분
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 export default {
   data: () => ({
     loginError: false,
@@ -65,7 +65,7 @@ export default {
         .then((result) => {
           if (result.status == 200) {
             this.$store.commit("signIn", result.data.user);
-            this.$route.push("/");
+            this.$router.push("/");
           }
         })
         .catch((err) => {

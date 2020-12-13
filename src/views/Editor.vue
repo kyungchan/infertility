@@ -264,7 +264,7 @@ import {
   Placeholder,
 } from "tiptap-extensions";
 
-const apiPrefix = "/api"; // production mode를 구분
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 
 export default {
   components: {

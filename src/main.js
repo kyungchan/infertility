@@ -19,3 +19,18 @@ new Vue({
   vuetify,
   render: (h) => h(App),
 }).$mount("#app");
+
+Axios.interceptors.response.use(
+  (res) => {
+    return Promise.resolve(res);
+  },
+  (err) => {
+    // 모든 401 status code에 로그아웃 > 토큰이 만료되거나 기타 토큰오류
+    if (err.response.status === 401) {
+      Vue.$cookies.remove("userId");
+      store.commit("signOut");
+      return;
+    }
+    return Promise.reject(err);
+  }
+);

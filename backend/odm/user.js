@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   createdAt: { type: Date, default: new Date() },
-  role: { type: String, default: "user" },
+  rule: { type: String, default: "user" },
 });
 
 // hash password

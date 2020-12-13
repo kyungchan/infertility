@@ -80,7 +80,7 @@ import BoardItem from "../components/home/BoardItem";
 import sanitizeHtml from "sanitize-html";
 import axios from "axios";
 
-const apiPrefix = "/api"; // production mode를 구분
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 
 export default {
   components: { BoardItem },

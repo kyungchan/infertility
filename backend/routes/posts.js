@@ -15,7 +15,6 @@ router.get("/", async function (req, res) {
   boardModel
     .mapReduce(o)
     .then((result) => {
-      console.log(result.results);
       res.status(200).json(result.results);
     })
     .catch((err) => {
@@ -40,7 +39,7 @@ router.get("/:boardCode", function (req, res) {
   const page = req.query.page || 1;
   const findOption = { boardCode: req.params.boardCode };
   if (req.query.search) findOption["$text"] = { $search: req.query.search };
-  console.log(findOption);
+
   boardModel
     .find(findOption)
     .countDocuments()

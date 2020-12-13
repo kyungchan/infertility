@@ -43,6 +43,7 @@ const routes = [
   {
     path: "/boards/:id/editor",
     name: "Editor",
+    meta: { authRequired: true },
     component: Editor,
     props: (route) => ({ board: boards[route.params.id - 1] }),
   },
@@ -63,7 +64,7 @@ const routes = [
   },
   {
     path: "/admin/mypage",
-    meta: { authRequire: true },
+    meta: { authRequired: true },
     component: AdminLogin,
   },
   {
@@ -80,18 +81,22 @@ const router = new VueRouter({
 
 // Auth navigation gaurd
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.authRequire)) {
+  if (store.state.rule)
     axios
       .post("/api/auth/refresh")
       .then((res) => {
         store.commit("signIn", res.data.user);
-        return next();
       })
       .catch(() => {
         store.commit("signOut");
-        return next();
       });
-  } else next();
+  if (to.matched.some((record) => record.meta.authRequired)) {
+    if (store.state.rule == "admin") return next();
+    else {
+      return next({ path: "/error" });
+    }
+  }
+  return next();
 });
 
 // Progress bar part
