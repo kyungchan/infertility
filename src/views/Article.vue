@@ -10,7 +10,13 @@
     </div>
     <div class="text-subtitle-2 mt-2">
       <v-icon left>mdi-calendar-month</v-icon>
-      <span style="vertical-align: middle">{{ post.createdAt }}</span>
+      <span style="vertical-align: middle">{{
+        $moment(post.createdAt).format("YYYY-MM-DD hh:mm:ss")
+      }}</span>
+    </div>
+    <div class="text-subtitle-2 mt-2">
+      <v-icon left>mdi-file-find</v-icon>
+      <span style="vertical-align: middle">{{ post.view }}</span>
     </div>
     <v-divider class="my-4"></v-divider>
     <editor-content :editor="editor" />
@@ -52,8 +58,10 @@ export default {
           vm.post = result.data;
         });
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        next((vm) => {
+          vm.$router.replace("/error");
+        });
       });
   },
   mounted() {
@@ -87,7 +95,6 @@ export default {
       editable: false,
       content: this.post.content,
     });
-    this.post.createdAt = this.post.createdAt.substr(0, 10);
   },
   beforeDestroy() {
     this.editor.destroy();

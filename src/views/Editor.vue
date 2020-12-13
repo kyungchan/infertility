@@ -1,5 +1,37 @@
 <template>
-  <v-container>
+  <v-container class="container">
+    <v-dialog v-model="errorDialog" max-width="500px">
+      <v-card>
+        <v-card-title> 오류 </v-card-title>
+        <v-card-text> 제목을 입력해주세요. </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="errorDialog = false" depressed
+            >OK</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="confirmDialog" max-width="500px">
+      <v-card>
+        <v-card-title>경고</v-card-title>
+        <v-card-text>페이지를 벗어나면 입력한 데이터가 사라집니다.</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="$router.go(-1)" tile depressed
+            >OK</v-btn
+          >
+          <v-btn
+            color="primary"
+            @click="confirmDialog = false"
+            tile
+            outlined
+            depressed
+            >취소</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-row class="mx-3 my-5" align="center">
       <v-col cols="12" class="pa-0">
         <router-link
@@ -9,11 +41,6 @@
         >
       </v-col>
       <h2 class="mt-1 ma-0">글 작성</h2>
-      <v-spacer></v-spacer>
-      <v-btn color="primary" class="mr-2" depressed tile @click="onPublish"
-        >등록</v-btn
-      >
-      <v-btn color="primary" depressed outlined tile>취소</v-btn>
     </v-row>
     <v-text-field
       id="editor-title"
@@ -21,184 +48,196 @@
       placeholder="Title"
       flat
       solo
-      hide-details="auto"
+      hide-details="true"
       v-model="title"
     ></v-text-field>
-    <v-card>
-      <v-card-text>
-        <div class="editor">
-          <editor-menu-bubble
+    <v-card class="pt-2">
+      <div class="editor ma-2 pb-5">
+        <editor-menu-bubble
+          class="menububble"
+          :editor="editor"
+          @hide="hideLinkMenu"
+          v-slot="{ commands, isActive, getMarkAttrs, menu }"
+        >
+          <div
             class="menububble"
-            :editor="editor"
-            @hide="hideLinkMenu"
-            v-slot="{ commands, isActive, getMarkAttrs, menu }"
+            :class="{ 'is-active': menu.isActive }"
+            :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
           >
-            <div
-              class="menububble"
-              :class="{ 'is-active': menu.isActive }"
-              :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
+            <form
+              class="menububble__form"
+              v-if="linkMenuIsActive"
+              @submit.prevent="setLinkUrl(commands.link, linkUrl)"
             >
-              <form
-                class="menububble__form"
-                v-if="linkMenuIsActive"
-                @submit.prevent="setLinkUrl(commands.link, linkUrl)"
+              <input
+                class="menububble__input"
+                type="text"
+                v-model="linkUrl"
+                placeholder="https://"
+                ref="linkInput"
+                @keydown.esc="hideLinkMenu"
+              />
+              <button
+                class="menububble__button"
+                @click="setLinkUrl(commands.link, null)"
+                type="button"
               >
-                <input
-                  class="menububble__input"
-                  type="text"
-                  v-model="linkUrl"
-                  placeholder="https://"
-                  ref="linkInput"
-                  @keydown.esc="hideLinkMenu"
-                />
-                <button
-                  class="menububble__button"
-                  @click="setLinkUrl(commands.link, null)"
-                  type="button"
+                <v-icon small color="white">mdi-close</v-icon>
+              </button>
+            </form>
+
+            <template v-else>
+              <button
+                class="menububble__button"
+                @click="showLinkMenu(getMarkAttrs('link'))"
+                :class="{ 'is-active': isActive.link() }"
+              >
+                <span>{{ isActive.link() ? "Update Link" : "Add Link" }}</span>
+                <v-icon small dark style="padding-top: 6px; padding-left: 4px"
+                  >mdi-link-variant</v-icon
                 >
-                  <icon name="remove" />
-                </button>
-              </form>
-
-              <template v-else>
-                <button
-                  class="menububble__button"
-                  @click="showLinkMenu(getMarkAttrs('link'))"
-                  :class="{ 'is-active': isActive.link() }"
-                >
-                  <span>{{
-                    isActive.link() ? "Update Link" : "Add Link"
-                  }}</span>
-                  <icon name="link" />
-                </button>
-              </template>
-            </div>
-          </editor-menu-bubble>
-
-          <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-            <div class="menubar">
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.bold() }"
-                @click="commands.bold"
-              >
-                <v-icon>mdi-format-bold</v-icon>
               </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.italic() }"
-                @click="commands.italic"
-              >
-                <v-icon>mdi-format-italic</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.strike() }"
-                @click="commands.strike"
-              >
-                <v-icon>mdi-format-strikethrough</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.underline() }"
-                @click="commands.underline"
-              >
-                <v-icon>mdi-format-underline</v-icon>
-              </button>
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.paragraph() }"
-                @click="commands.paragraph"
-              >
-                <v-icon>mdi-format-paragraph</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-                @click="commands.heading({ level: 1 })"
-              >
-                <v-icon>mdi-format-header-1</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-                @click="commands.heading({ level: 2 })"
-              >
-                <v-icon>mdi-format-header-2</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-                @click="commands.heading({ level: 3 })"
-              >
-                <v-icon>mdi-format-header-3</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.bullet_list() }"
-                @click="commands.bullet_list"
-              >
-                <v-icon>mdi-format-list-bulleted</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.ordered_list() }"
-                @click="commands.ordered_list"
-              >
-                <v-icon>mdi-format-list-numbered</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.blockquote() }"
-                @click="commands.blockquote"
-              >
-                <v-icon>mdi-format-quote-open</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                :class="{ 'is-active': isActive.code_block() }"
-                @click="commands.code_block"
-              >
-                <v-icon>mdi-code-tags</v-icon>
-              </button>
-
-              <button class="menubar__button" @click="commands.horizontal_rule">
-                <v-icon>mdi-minus</v-icon>
-              </button>
-
-              <button class="menubar__button" @click="commands.undo">
-                <v-icon>mdi-undo</v-icon>
-              </button>
-
-              <button class="menubar__button" @click="commands.redo">
-                <v-icon>mdi-redo</v-icon>
-              </button>
-
-              <button
-                class="menubar__button"
-                @click="showImagePrompt(commands.image)"
-              >
-                <v-icon>mdi-image</v-icon>
-              </button>
-            </div>
-          </editor-menu-bar>
-          <div class="mb-3">
-            <v-divider></v-divider>
+            </template>
           </div>
-          <editor-content class="editor__content mx-3" :editor="editor" />
+        </editor-menu-bubble>
+
+        <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
+          <div class="menubar">
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.bold() }"
+              @click="commands.bold"
+            >
+              <v-icon>mdi-format-bold</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.italic() }"
+              @click="commands.italic"
+            >
+              <v-icon>mdi-format-italic</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.strike() }"
+              @click="commands.strike"
+            >
+              <v-icon>mdi-format-strikethrough</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.underline() }"
+              @click="commands.underline"
+            >
+              <v-icon>mdi-format-underline</v-icon>
+            </button>
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.paragraph() }"
+              @click="commands.paragraph"
+            >
+              <v-icon>mdi-format-paragraph</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+              @click="commands.heading({ level: 1 })"
+            >
+              <v-icon>mdi-format-header-1</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+              @click="commands.heading({ level: 2 })"
+            >
+              <v-icon>mdi-format-header-2</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+              @click="commands.heading({ level: 3 })"
+            >
+              <v-icon>mdi-format-header-3</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.bullet_list() }"
+              @click="commands.bullet_list"
+            >
+              <v-icon>mdi-format-list-bulleted</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.ordered_list() }"
+              @click="commands.ordered_list"
+            >
+              <v-icon>mdi-format-list-numbered</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.blockquote() }"
+              @click="commands.blockquote"
+            >
+              <v-icon>mdi-format-quote-open</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              :class="{ 'is-active': isActive.code_block() }"
+              @click="commands.code_block"
+            >
+              <v-icon>mdi-code-tags</v-icon>
+            </button>
+
+            <button class="menubar__button" @click="commands.horizontal_rule">
+              <v-icon>mdi-minus</v-icon>
+            </button>
+
+            <button class="menubar__button" @click="commands.undo">
+              <v-icon>mdi-undo</v-icon>
+            </button>
+
+            <button class="menubar__button" @click="commands.redo">
+              <v-icon>mdi-redo</v-icon>
+            </button>
+
+            <button
+              class="menubar__button"
+              @click="showImagePrompt(commands.image)"
+            >
+              <v-icon>mdi-image</v-icon>
+            </button>
+          </div>
+        </editor-menu-bar>
+        <div class="mb-3">
+          <v-divider></v-divider>
         </div>
-      </v-card-text>
+        <editor-content class="editor__content px-3" :editor="editor" />
+      </div>
     </v-card>
+    <v-row class="mr-1 mt-3">
+      <v-spacer></v-spacer>
+      <v-btn color="primary" class="mr-2" depressed tile @click="onPublish"
+        >등록</v-btn
+      >
+      <v-btn
+        color="primary"
+        depressed
+        outlined
+        tile
+        @click="confirmDialog = true"
+        >취소</v-btn
+      ></v-row
+    >
   </v-container>
 </template>
 
@@ -236,6 +275,8 @@ export default {
   props: ["board"],
   data() {
     return {
+      errorDialog: false,
+      confirmDialog: false,
       title: "",
       content: "",
       html: "",
@@ -287,6 +328,9 @@ export default {
       }
     },
     onPublish() {
+      if (!this.title.length) {
+        this.errorDialog = true;
+      }
       this.$axios
         .post(`${apiPrefix}/posts/${this.board.code}`, {
           title: this.title,
@@ -318,9 +362,13 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #editor-title {
   font-size: 1.5em;
+}
+.editor .editor__content {
+  height: 44vh;
+  overflow: auto;
 }
 </style>
 

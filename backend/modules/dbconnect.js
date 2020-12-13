@@ -1,7 +1,4 @@
 const tag = "[dbconnect.js]";
-const dotenv = require("dotenv");
-
-dotenv.config();
 
 const mongoose = require("mongoose");
 

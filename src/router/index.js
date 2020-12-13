@@ -1,10 +1,21 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import axios from "axios";
+import store from "../store/index.js";
+
+// Routing progress bar
+import NProgress from "nprogress";
+import "../assets/nprogress.css";
 
 import Home from "../views/Home.vue";
 import Editor from "..//views/Editor.vue";
 import Board from "..//views/Board.vue";
 import Article from "..//views/Article.vue";
+import Survey from "..//views/Survey.vue";
+
+import AdminLogin from "../views/Admin/Login";
+
+import ErrorPage from "..//views/Error.vue";
 
 Vue.use(VueRouter);
 
@@ -41,12 +52,60 @@ const routes = [
     component: Article,
     props: (route) => ({ board: boards[route.params.id - 1] }),
   },
+  {
+    path: "/survey",
+    name: "Survey",
+    component: Survey,
+  },
+  {
+    path: "/admin/login",
+    component: AdminLogin,
+  },
+  {
+    path: "/admin/mypage",
+    meta: { authRequire: true },
+    component: AdminLogin,
+  },
+  {
+    path: "*",
+    component: ErrorPage,
+  },
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+// Auth navigation gaurd
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.authRequire)) {
+    axios
+      .post("/api/auth/refresh")
+      .then((res) => {
+        store.commit("signIn", res.data.user);
+        return next();
+      })
+      .catch(() => {
+        store.commit("signOut");
+        return next();
+      });
+  } else next();
+});
+
+// Progress bar part
+NProgress.configure({ showSpinner: false });
+NProgress.configure({ easing: "ease", speed: 300 });
+router.beforeResolve((to, from, next) => {
+  if (to.path) {
+    NProgress.start();
+  }
+  next();
+});
+
+router.afterEach(() => {
+  NProgress.done();
 });
 
 export default router;

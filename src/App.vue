@@ -139,6 +139,11 @@ export default {
   data: () => ({
     drawer: false,
   }),
+  computed: {
+    userRule() {
+      return this.$store.state.rule;
+    },
+  },
 };
 </script>
 
