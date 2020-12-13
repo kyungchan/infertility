@@ -42,17 +42,17 @@
               <v-list-item-title>난임 정보 마당</v-list-item-title>
             </v-list-item-content>
           </template>
-          <v-list-item>
+          <v-list-item link to="/boards/3">
             <v-list-item-content>
               <v-list-item-title>난임 현황</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link>
+          <v-list-item link to="/boards/3">
             <v-list-item-content>
               <v-list-item-title>난임 경험</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link>
+          <v-list-item link to="/boards/3">
             <v-list-item-content>
               <v-list-item-title>난임 지원</v-list-item-title>
             </v-list-item-content>
@@ -94,7 +94,7 @@
               <v-list-item-title> 정서 건강 중재 </v-list-item-title>
             </v-list-item>
 
-            <v-list-item link>
+            <v-list-item link to="/survey">
               <v-list-item-title> 나의 심리 상태 검사 </v-list-item-title>
             </v-list-item>
           </v-list-group>

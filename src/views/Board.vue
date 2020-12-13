@@ -92,7 +92,6 @@ export default {
     search: "",
   }),
   created() {
-    console.log(this.$route.params.id);
     if (this.$route.params.id > 6 || this.$route.params.id < 1) {
       this.$router.replace("/error");
     }

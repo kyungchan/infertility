@@ -79,11 +79,12 @@ const router = new VueRouter({
   routes,
 });
 
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
 router.beforeEach((to, from, next) => {
   if (store.state.rule)
     axios
-      .post("/api/auth/refresh")
+      .post(`${apiPrefix}/auth/refresh`)
       .then((res) => {
         store.commit("signIn", res.data.user);
       })

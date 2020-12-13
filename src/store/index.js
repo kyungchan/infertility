@@ -4,6 +4,7 @@ import axios from "axios";
 
 Vue.use(Vuex);
 
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 export default new Vuex.Store({
   state: {
     userId: "",
@@ -20,7 +21,7 @@ export default new Vuex.Store({
       state.userId = "";
       state.userName = "";
       state.rule = "";
-      axios.post("/api/auth/signout");
+      axios.post(`${apiPrefix}/auth/signout`);
     },
   },
   actions: {},

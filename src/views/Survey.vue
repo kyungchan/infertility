@@ -240,6 +240,7 @@
                 width="100%"
                 tile
                 depressed
+                :disabled="completeLength != 20"
                 @click="onComplete"
                 >{{ `${completeLength}/20 완료` }}</v-btn
               >

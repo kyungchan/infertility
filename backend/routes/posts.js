@@ -9,7 +9,7 @@ router.get("/", async function (req, res) {
   //각 게시판마다 랜덤한 게시글 가져오기
   let o = {};
   o.map =
-    "function () { emit(this.boardCode, {'_id': this._id, 'title': this.title, 'createdAt': this.createdAt})}";
+    "function () { if(this.boardCode<7) emit(this.boardCode, {'_id': this._id, 'title': this.title, 'createdAt': this.createdAt})}";
   o.reduce =
     "function (key, values) { const random = Math.floor(Math.random() * values.length); return values[random]; }";
   boardModel
