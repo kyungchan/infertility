@@ -1,9 +1,17 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+const userModel = require("../odm/user");
+
+router.patch("/", function (req, res) {
+  userModel
+    .update({ userId: req.body.userId }, { password: req.body.password })
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch(() => {
+      res.sendStatus(404);
+    });
 });
 
 module.exports = router;

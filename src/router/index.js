@@ -14,6 +14,7 @@ import Article from "..//views/Article.vue";
 import Survey from "..//views/Survey.vue";
 
 import AdminLogin from "../views/Admin/Login";
+import Admin from "../views/Admin/Admin";
 
 import ErrorPage from "..//views/Error.vue";
 
@@ -67,12 +68,12 @@ const routes = [
     component: Survey,
   },
   {
-    path: "/admin/login",
-    component: AdminLogin,
+    path: "/admin",
+    meta: { authRequired: true },
+    component: Admin,
   },
   {
-    path: "/admin/mypage",
-    meta: { authRequired: true },
+    path: "/admin/login",
     component: AdminLogin,
   },
   {
@@ -90,14 +91,16 @@ const router = new VueRouter({
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
 router.beforeEach((to, from, next) => {
-  axios
-    .post(`${apiPrefix}/auth/refresh`)
-    .then((res) => {
-      store.commit("signIn", res.data.user);
-    })
-    .catch(() => {
-      store.commit("signOut");
-    });
+  if (Vue.$cookies.get("userId"))
+    axios
+      .post(`${apiPrefix}/auth/refresh`)
+      .then((res) => {
+        store.commit("signIn", res.data.user);
+      })
+      .catch(() => {
+        store.commit("signOut");
+        return next();
+      });
   if (to.matched.some((record) => record.meta.authRequired)) {
     if (store.state.rule == "admin") return next();
     else {

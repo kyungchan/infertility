@@ -10,6 +10,7 @@ router.post("/check", function (req, res) {
     .then((decoded) => {
       res.status(200).json({
         rule: decoded.rule,
+        userId: decoded.userId,
       });
     })
     .catch((err) => {
@@ -30,24 +31,25 @@ router.post("/refresh", function (req, res) {
         .then((token) => {
           res
             .cookie("token", token, {
-              maxAge: 7200000,
+              maxAge: 3600000,
               httpOnly: true,
             })
             .status(200)
             .json({
               user: {
                 rule: decoded.rule,
+                userId: decoded.userId,
               },
             });
         })
         .catch((err) => {
           // 토큰 생성 실패
-          console.log(err);
+          // console.log(err);
           res.sendStatus(401);
         });
     })
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
       res.sendStatus(401);
     });
 });
@@ -78,6 +80,7 @@ router.post("/signin", function (req, res) {
                 .json({
                   user: {
                     rule: user.rule,
+                    userId: user.userId,
                   },
                 });
             })

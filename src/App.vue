@@ -13,7 +13,7 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item dense>
+          <v-list-item dense to="/admin">
             <v-list-item-title
               ><v-icon left>mdi-account-circle</v-icon>Admin
               Page</v-list-item-title
