@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="topScroll">
     <v-dialog v-model="deleteDialog">
       <v-card>
         <v-card-title> 삭제 </v-card-title>
@@ -53,7 +53,10 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :to="`./${$route.params.postId}/editor`" dense>
+              <v-list-item
+                :to="`../${$route.params.id}/${$route.params.postId}/editor`"
+                dense
+              >
                 <v-list-item-title>
                   <v-icon left>mdi-pencil</v-icon>수정</v-list-item-title
                 >
@@ -124,7 +127,7 @@ export default {
           `${apiPrefix}/posts/${this.$route.params.id}/${this.$route.params.postId}`
         )
         .then(() => {
-          this.$router.replace("../");
+          this.$router.replace(`.`);
         })
         .catch(() => {
           this.$router.replace("/error");
@@ -137,6 +140,12 @@ export default {
     },
   },
   mounted() {
+    setTimeout(() => {
+      this.$scrollTo.scrollTo(".topScroll", 800, {
+        offset: -80,
+        easing: [0.65, 0, 0.35, 1],
+      });
+    }, 50);
     this.editor = new Editor({
       extensions: [
         new Placeholder({
@@ -167,12 +176,6 @@ export default {
       editable: false,
       content: this.post.content,
     });
-    setTimeout(() => {
-      this.$scrollTo.scrollTo(".topScroll", 800, {
-        offset: -80,
-        easing: [0.65, 0, 0.35, 1],
-      });
-    }, 50);
   },
   beforeDestroy() {
     this.editor.destroy();

@@ -328,6 +328,7 @@ export default {
         )
         .then((result) => {
           this.title = result.data.title;
+          this.content = result.data.content;
           this.editor.setContent(result.data.content);
         })
         .catch((err) => {
@@ -361,7 +362,7 @@ export default {
               }
             )
             .then(() => {
-              this.$router.replace(`./`);
+              this.$router.replace(`.`);
             })
             .catch((err) => {
               console.log(err);
