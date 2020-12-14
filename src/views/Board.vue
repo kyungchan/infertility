@@ -48,10 +48,7 @@
         </div>
 
         <li v-for="post in posts" :key="post._id">
-          <router-link
-            :to="`${post.boardCode}/${post._id}`"
-            class="text-decoration-none"
-          >
+          <router-link :to="`./${post._id}`" class="text-decoration-none">
             <v-slide-y-reverse-transition appear hide-on-leave duration="1000">
               <board-item
                 :title="post.title"

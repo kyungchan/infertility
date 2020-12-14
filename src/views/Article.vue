@@ -1,25 +1,78 @@
 <template>
   <v-container>
-    <router-link
-      class="text-subtitle-2 text-decoration-none"
-      :to="{ name: 'Board', params: { boardId: board.id } }"
-      >{{ board.name }}</router-link
-    >
-    <div class="text-h5 mt-3 font-weight-bold" id="title">
-      {{ post.title }}
-    </div>
-    <div class="text-subtitle-2 mt-2">
-      <v-icon left>mdi-calendar-month</v-icon>
-      <span style="vertical-align: middle">{{
-        $moment(post.createdAt).format("YYYY-MM-DD hh:mm:ss")
-      }}</span>
-    </div>
-    <div class="text-subtitle-2 mt-2">
-      <v-icon left>mdi-file-find</v-icon>
-      <span style="vertical-align: middle">{{ post.view }}</span>
-    </div>
-    <v-divider class="my-4"></v-divider>
-    <editor-content :editor="editor" />
+    <v-dialog v-model="deleteDialog">
+      <v-card>
+        <v-card-title> 삭제 </v-card-title>
+        <v-card-text> 정말 게시글을 삭제하시겠습니까? </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="onDelete" tile depressed>예</v-btn>
+          <v-btn
+            color="primary"
+            outlined
+            tile
+            @click="this.deleteDialog = false"
+            >아니오</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-row>
+      <v-col cols="12" class="py-0">
+        <router-link
+          v-if="board.code != 0"
+          class="text-subtitle-2 text-decoration-none"
+          :to="{ name: 'Board', params: { boardId: board.id } }"
+          >{{ board.name }}</router-link
+        >
+      </v-col>
+      <v-col cols="12" class="py-0">
+        <div class="text-h5 mt-3 font-weight-bold" id="title">
+          {{ post.title }}
+        </div>
+      </v-col>
+
+      <v-col cols="12" class="py-0">
+        <div class="text-subtitle-2 mt-2">
+          <v-icon left>mdi-calendar-month</v-icon>
+          <span style="vertical-align: middle">{{
+            $moment(post.createdAt).format("YYYY-MM-DD hh:mm:ss")
+          }}</span>
+        </div>
+        <v-row class="px-3">
+          <div class="text-subtitle-2 mt-2">
+            <v-icon left>mdi-file-find</v-icon>
+            <span style="vertical-align: middle">{{ post.view }}</span>
+          </div>
+          <v-spacer></v-spacer>
+
+          <v-menu offset-y v-if="userRule == 'admin'">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item :to="`./${$route.params.postId}/editor`" dense>
+                <v-list-item-title>
+                  <v-icon left>mdi-pencil</v-icon>수정</v-list-item-title
+                >
+              </v-list-item>
+              <v-list-item dense @click="deleteDialog = true">
+                <v-list-item-title>
+                  <v-icon left>mdi-delete</v-icon>삭제
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-row>
+      </v-col>
+
+      <v-col cols="12" class="py-0">
+        <v-divider class="my-4"></v-divider>
+        <editor-content :editor="editor" />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
@@ -49,7 +102,7 @@ const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // produc
 export default {
   components: { EditorContent },
   props: ["board"],
-  data: () => ({ editor: null, post: {} }),
+  data: () => ({ editor: null, post: {}, deleteDialog: false }),
   beforeRouteEnter(to, from, next) {
     axios
       .get(`${apiPrefix}/posts/${to.params.id}/${to.params.postId}`)
@@ -63,6 +116,25 @@ export default {
           vm.$router.replace("/error");
         });
       });
+  },
+  methods: {
+    onDelete() {
+      this.$axios
+        .delete(
+          `${apiPrefix}/posts/${this.$route.params.id}/${this.$route.params.postId}`
+        )
+        .then(() => {
+          this.$router.replace("../");
+        })
+        .catch(() => {
+          this.$router.replace("/error");
+        });
+    },
+  },
+  computed: {
+    userRule() {
+      return this.$store.state.rule;
+    },
   },
   mounted() {
     this.editor = new Editor({
@@ -95,6 +167,12 @@ export default {
       editable: false,
       content: this.post.content,
     });
+    setTimeout(() => {
+      this.$scrollTo.scrollTo(".topScroll", 800, {
+        offset: -80,
+        easing: [0.65, 0, 0.35, 1],
+      });
+    }, 50);
   },
   beforeDestroy() {
     this.editor.destroy();

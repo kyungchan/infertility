@@ -42,17 +42,17 @@
               <v-list-item-title>난임 정보 마당</v-list-item-title>
             </v-list-item-content>
           </template>
-          <v-list-item link to="/boards/3">
+          <v-list-item link to="/boards/0/5fd642887d8cd6c30ed4cf83">
             <v-list-item-content>
               <v-list-item-title>난임 현황</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link to="/boards/3">
+          <v-list-item link to="/boards/0/5fd642887d8cd6c30ed4cf84">
             <v-list-item-content>
               <v-list-item-title>난임 경험</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link to="/boards/3">
+          <v-list-item link to="/boards/0/5fd642887d8cd6c30ed4cf85">
             <v-list-item-content>
               <v-list-item-title>난임 지원</v-list-item-title>
             </v-list-item-content>

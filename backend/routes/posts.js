@@ -11,7 +11,7 @@ router.get("/", async function (req, res) {
   o.map =
     "function () { if(this.boardCode<7) emit(this.boardCode, {'_id': this._id, 'title': this.title, 'createdAt': this.createdAt})}";
   o.reduce =
-    "function (key, values) { const random = Math.floor(Math.random() * values.length); return values[random]; }";
+    "function (key, values) { if(key==0) return {value: values}; const random = Math.floor(Math.random() * values.length); return values[random]; }";
   boardModel
     .mapReduce(o)
     .then((result) => {
@@ -79,12 +79,10 @@ router.post("/:boardCode", function (req, res) {
 });
 
 router.get("/:boardCode/:postId", function (req, res) {
+  let updateQuery = {};
+  if (req.query.editmode) updateQuery = { $inc: { view: 1 } };
   boardModel
-    .findOneAndUpdate(
-      { _id: req.params.postId },
-      { $inc: { view: 1 } },
-      { new: true }
-    )
+    .findOneAndUpdate({ _id: req.params.postId }, updateQuery, { new: true })
     .then((result) => {
       res.status(200).json(result);
     })
@@ -110,9 +108,12 @@ router.delete("/:boardCode/:postId", function (req, res) {
 
 router.patch("/:boardCode/:postId", function (req, res) {
   boardModel
-    .updateOne({
-      _id: req.params.postId,
-    })
+    .updateOne(
+      {
+        _id: req.params.postId,
+      },
+      req.body
+    )
     .then(() => {
       res.sendStatus(200);
     })

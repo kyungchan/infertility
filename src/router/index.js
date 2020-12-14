@@ -20,6 +20,7 @@ import ErrorPage from "..//views/Error.vue";
 Vue.use(VueRouter);
 
 const boards = [
+  { code: "0", name: "난임 정보 마당" },
   { code: "1", name: "난임과 신체 건강" },
   { code: "2", name: "신체 건강 중재" },
   { code: "3", name: "난임과 정서적 건강" },
@@ -38,20 +39,27 @@ const routes = [
     path: "/boards/:id",
     name: "Board",
     component: Board,
-    props: (route) => ({ board: boards[route.params.id - 1] }),
+    props: (route) => ({ board: boards[route.params.id] }),
   },
   {
     path: "/boards/:id/editor",
     name: "Editor",
     meta: { authRequired: true },
     component: Editor,
-    props: (route) => ({ board: boards[route.params.id - 1] }),
+    props: (route) => ({ board: boards[route.params.id] }),
   },
   {
     path: "/boards/:id/:postId",
     name: "Article",
     component: Article,
-    props: (route) => ({ board: boards[route.params.id - 1] }),
+    props: (route) => ({ board: boards[route.params.id] }),
+  },
+  {
+    path: "/boards/:id/:postId/editor",
+    name: "ArticleEdit",
+    meta: { authRequired: true },
+    component: Editor,
+    props: (route) => ({ board: boards[route.params.id], editMode: true }),
   },
   {
     path: "/survey",
@@ -82,15 +90,14 @@ const router = new VueRouter({
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
 router.beforeEach((to, from, next) => {
-  if (store.state.rule)
-    axios
-      .post(`${apiPrefix}/auth/refresh`)
-      .then((res) => {
-        store.commit("signIn", res.data.user);
-      })
-      .catch(() => {
-        store.commit("signOut");
-      });
+  axios
+    .post(`${apiPrefix}/auth/refresh`)
+    .then((res) => {
+      store.commit("signIn", res.data.user);
+    })
+    .catch(() => {
+      store.commit("signOut");
+    });
   if (to.matched.some((record) => record.meta.authRequired)) {
     if (store.state.rule == "admin") return next();
     else {

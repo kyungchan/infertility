@@ -3,7 +3,7 @@
     <v-dialog v-model="errorDialog" max-width="500px">
       <v-card>
         <v-card-title> 오류 </v-card-title>
-        <v-card-text> 제목을 입력해주세요. </v-card-text>
+        <v-card-text> {{ errorMessage }} </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" @click="errorDialog = false" depressed
@@ -40,7 +40,7 @@
           >{{ board.name }}</router-link
         >
       </v-col>
-      <h2 class="mt-1 ma-0">글 작성</h2>
+      <h2 class="mt-1 ma-0">{{ editMode ? "글 수정" : "글 작성" }}</h2>
     </v-row>
     <v-text-field
       id="editor-title"
@@ -50,6 +50,7 @@
       solo
       hide-details="true"
       v-model="title"
+      :rules="[(v) => !!v || '제목을 입력해주세요.']"
     ></v-text-field>
     <v-card class="pt-2">
       <div class="editor ma-2 pb-5">
@@ -272,9 +273,11 @@ export default {
     EditorMenuBubble,
     EditorMenuBar,
   },
-  props: ["board"],
+  props: ["board", "editMode"],
   data() {
     return {
+      errorMessage: "",
+      editPost: {},
       errorDialog: false,
       confirmDialog: false,
       title: "",
@@ -317,6 +320,22 @@ export default {
       }),
     };
   },
+  mounted() {
+    if (this.editMode) {
+      this.$axios
+        .get(
+          `${apiPrefix}/posts/${this.$route.params.id}/${this.$route.params.postId}?editmode=true`
+        )
+        .then((result) => {
+          this.title = result.data.title;
+          this.editor.setContent(result.data.content);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.replace("/error");
+        });
+    }
+  },
   beforeDestroy() {
     this.editor.destroy();
   },
@@ -330,18 +349,37 @@ export default {
     onPublish() {
       if (!this.title.length) {
         this.errorDialog = true;
+        this.errorMessage = "제목을 입력해주세요.";
+      } else {
+        if (this.editMode) {
+          this.$axios
+            .patch(
+              `${apiPrefix}/posts/${this.board.code}/${this.$route.params.postId}`,
+              {
+                title: this.title,
+                content: this.content,
+              }
+            )
+            .then(() => {
+              this.$router.replace(`./`);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          this.$axios
+            .post(`${apiPrefix}/posts/${this.board.code}`, {
+              title: this.title,
+              content: this.content,
+            })
+            .then((result) => {
+              this.$router.replace(`./${result.data._id}`);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       }
-      this.$axios
-        .post(`${apiPrefix}/posts/${this.board.code}`, {
-          title: this.title,
-          content: this.content,
-        })
-        .then((result) => {
-          this.$router.replace(`./${result.data._id}`);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     },
     showLinkMenu(attrs) {
       this.linkUrl = attrs.href;

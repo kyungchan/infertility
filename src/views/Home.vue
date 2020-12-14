@@ -18,6 +18,41 @@
     </v-parallax>
     <v-container>
       <v-row>
+        <v-col cols="12">
+          <v-card tile outlined>
+            <v-card-title primary-title class="font-weight-medium pt-2 pb-0">
+              <router-link
+                :to="`/boards/0`"
+                :class="`pink--text`"
+                class="text-decoration-none"
+              >
+                난임 정보 마당</router-link
+              >
+            </v-card-title>
+            <v-card-text class="pb-0">
+              <v-divider class="my-3"></v-divider>
+              <v-row>
+                <v-col
+                  class="py-0"
+                  cols="12"
+                  md="6"
+                  v-for="post in infoPost"
+                  :key="post.title"
+                >
+                  <list-item
+                    :title="post.title"
+                    :date="
+                      $moment(post.createdAt).format('YYYY-MM-DD hh:mm:ss')
+                    "
+                    color="pink"
+                    :link="`/boards/0/${post._id}`"
+                  >
+                  </list-item>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
         <v-col
           v-for="board in boards"
           :key="board.code"
@@ -27,18 +62,24 @@
           class="py-1"
         >
           <v-card tile outlined>
-            <v-card-title
-              primary-title
-              :class="`${board.color}--text`"
-              class="font-weight-medium"
-            >
-              {{ board.name }}
-              <v-spacer></v-spacer
-              ><v-btn :to="`/boards/${board.code}`" color="black" icon
-                ><v-icon>mdi-plus</v-icon></v-btn
+            <v-card-title primary-title class="font-weight-medium pt-2 pb-0">
+              <router-link
+                :to="`/boards/${board.code}`"
+                :class="`${board.color}--text`"
+                class="text-decoration-none"
               >
+                {{ board.name }}</router-link
+              >
+              <v-spacer></v-spacer
+              ><router-link
+                :to="`/boards/${board.code}`"
+                class="caption grey--text text-decoration-none mt-2"
+              >
+                더보기
+              </router-link>
             </v-card-title>
-            <v-card-text>
+            <v-card-text class="pb-0">
+              <v-divider class="my-3"></v-divider>
               <list-item
                 v-if="board.post.title"
                 :title="board.post.title"
@@ -48,7 +89,7 @@
                 :color="board.color"
                 :link="`/boards/${board.code}/${board.post._id}`"
               ></list-item>
-              <div v-else class="text-center">작성된 글이 없습니다.</div>
+              <div v-else class="text-center mb-3">작성된 글이 없습니다.</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -64,6 +105,7 @@ const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // produc
 
 export default {
   data: () => ({
+    infoPost: [], // 난임 정보 마당용
     boards: [
       { code: "1", name: "난임과 신체 건강", color: "indigo", post: {} },
       { code: "2", name: "신체 건강 중재", color: "indigo", post: {} },
@@ -99,7 +141,8 @@ export default {
       .then((result) => {
         next((vm) => {
           result.data.forEach((e) => {
-            vm.boards[e._id - 1].post = e.value;
+            if (e._id == 0) vm.infoPost = e.value.value;
+            else vm.boards[e._id - 1].post = e.value;
           });
         });
       })
