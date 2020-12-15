@@ -8,19 +8,15 @@ router.patch("/", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
-      if (decoded.rule == "admin")
-        userModel
-          .updateOne(
-            { userId: decoded.userId },
-            { password: req.body.password }
-          )
-          .then(() => {
-            res.sendStatus(200);
-          })
-          .catch((err) => {
-            console.log(err);
-            res.sendStatus(404);
-          });
+      userModel
+        .updateOne({ id: decoded.id }, { password: req.body.password })
+        .then(() => {
+          res.sendStatus(200);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.sendStatus(404);
+        });
     })
     .catch(() => {
       res.sendStatus(401);

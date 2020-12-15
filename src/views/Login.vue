@@ -3,7 +3,7 @@
     <v-row align="center" justify="center">
       <v-col cols="12" md="6">
         <v-card>
-          <v-card-title> Login </v-card-title>
+          <v-card-title>로그인</v-card-title>
           <v-card-text>
             <v-form ref="signInForm">
               <v-row>
@@ -11,7 +11,7 @@
                   <v-text-field
                     label="ID"
                     prepend-inner-icon="mdi-account"
-                    v-model="loginModel.userId"
+                    v-model="loginModel.id"
                     :rules="[
                       (v) => !!v || 'ID를 입력하세요.',
                       (v) =>
@@ -37,7 +37,12 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="onLogin" tile depressed>Login</v-btn>
+            <v-btn color="primary" tile depressed to="/register">
+              회원가입
+            </v-btn>
+            <v-btn color="primary" @click="onLogin" tile depressed>
+              로그인
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -51,7 +56,7 @@ export default {
   data: () => ({
     loginError: false,
     loginModel: {
-      userId: "",
+      id: "",
       password: "",
     },
   }),

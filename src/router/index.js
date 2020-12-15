@@ -12,8 +12,9 @@ import Editor from "..//views/Editor.vue";
 import Board from "..//views/Board.vue";
 import Article from "..//views/Article.vue";
 import Survey from "..//views/Survey.vue";
+import Login from "../views/Login";
+import Register from "../views/register";
 
-import AdminLogin from "../views/Admin/Login";
 import Admin from "../views/Admin/Admin";
 
 import ErrorPage from "..//views/Error.vue";
@@ -73,8 +74,12 @@ const routes = [
     component: Admin,
   },
   {
-    path: "/admin/login",
-    component: AdminLogin,
+    path: "/login",
+    component: Login,
+  },
+  {
+    path: "/register",
+    component: Register,
   },
   {
     path: "*",

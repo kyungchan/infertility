@@ -1,17 +1,13 @@
 <template>
   <v-container class="topScroll">
-    <v-dialog v-model="deleteDialog">
+    <v-dialog v-model="deleteDialog" max-width="500px">
       <v-card>
         <v-card-title> 삭제 </v-card-title>
         <v-card-text> 정말 게시글을 삭제하시겠습니까? </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" @click="onDelete" tile depressed>예</v-btn>
-          <v-btn
-            color="primary"
-            outlined
-            tile
-            @click="this.deleteDialog = false"
+          <v-btn color="primary" outlined tile @click="deleteDialog = false"
             >아니오</v-btn
           >
         </v-card-actions>
@@ -61,7 +57,11 @@
                   <v-icon left>mdi-pencil</v-icon>수정</v-list-item-title
                 >
               </v-list-item>
-              <v-list-item dense @click="deleteDialog = true">
+              <v-list-item
+                v-if="board.code != 0"
+                dense
+                @click="deleteDialog = true"
+              >
                 <v-list-item-title>
                   <v-icon left>mdi-delete</v-icon>삭제
                 </v-list-item-title>
@@ -106,6 +106,19 @@ export default {
   components: { EditorContent },
   props: ["board"],
   data: () => ({ editor: null, post: {}, deleteDialog: false }),
+
+  beforeRouteUpdate(to, from, next) {
+    axios
+      .get(`${apiPrefix}/posts/${to.params.id}/${to.params.postId}`)
+      .then((result) => {
+        this.post = result.data;
+        this.editor.setContent(this.post.content);
+        next();
+      })
+      .catch(() => {
+        this.$router.replace("/error");
+      });
+  },
   beforeRouteEnter(to, from, next) {
     axios
       .get(`${apiPrefix}/posts/${to.params.id}/${to.params.postId}`)

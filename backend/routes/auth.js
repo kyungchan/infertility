@@ -9,7 +9,7 @@ router.post("/check", function (req, res) {
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       res.status(200).json({
-        userId: decoded.userId,
+        id: decoded.id,
         rule: decoded.rule,
       });
     })
@@ -25,7 +25,7 @@ router.post("/refresh", function (req, res) {
     .then((decoded) => {
       auth
         .createToken({
-          userId: decoded.userId,
+          id: decoded.id,
           rule: decoded.rule,
         })
         .then((token) => {
@@ -37,7 +37,7 @@ router.post("/refresh", function (req, res) {
             .status(200)
             .json({
               user: {
-                userId: decoded.userId,
+                id: decoded.id,
                 rule: decoded.rule,
               },
             });
@@ -56,8 +56,7 @@ router.post("/refresh", function (req, res) {
 
 router.post("/signin", function (req, res) {
   userModel
-    .findOne({ userId: req.body.userId }, { _id: 0, __v: 0 })
-    .exec()
+    .findOne({ id: req.body.id }, { _id: 0, __v: 0 })
     .then((user) => {
       user.comparePassword(req.body.password, (err, isMatch) => {
         if (err) {
@@ -67,7 +66,7 @@ router.post("/signin", function (req, res) {
         if (isMatch) {
           auth
             .createToken({
-              userId: user.userId,
+              id: user.id,
               rule: user.rule,
             })
             .then((token) => {
@@ -79,7 +78,7 @@ router.post("/signin", function (req, res) {
                 .status(200)
                 .json({
                   user: {
-                    userId: user.userId,
+                    id: user.id,
                     rule: user.rule,
                   },
                 });
