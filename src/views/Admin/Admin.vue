@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-dialog v-model="dialog">
+    <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
           {{ dialogTitle }}
@@ -16,38 +16,39 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="passwordDialog">
+    <v-dialog v-model="passwordDialog" max-width="500px">
       <v-card>
         <v-card-title> 비밀번호 변경 </v-card-title>
         <v-card-text>
-          <v-row>
-            <v-col cols="12" class="py-0">
-              <v-text-field
-                v-model="password.password"
-                type="password"
-                prepend-inner-icon="mdi-lock"
-                label="비밀번호"
-                :rules="[
-                  (v) => !!v || '비밀번호를 입력해주세요.',
-                  (v) => v.length > 5 || '6자리 이상 입력해주세요.',
-                ]"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" class="py-0">
-              <v-text-field
-                v-model="password.confirm"
-                type="password"
-                prepend-inner-icon="mdi-lock"
-                label="비밀번호 확인"
-                :rules="[
-                  (v) => !!v || '비밀번호를 입력해주세요.',
-                  (v) => v.length > 5 || '6자리 이상 입력해주세요.',
-                  (v) =>
-                    v == password.password || '비밀번호가 일치하지 않습니다.',
-                ]"
-              ></v-text-field>
-            </v-col>
-          </v-row>
+          <v-form ref="loginForm">
+            <v-row>
+              <v-col cols="12" class="py-0">
+                <v-text-field
+                  v-model="password.password"
+                  type="password"
+                  prepend-inner-icon="mdi-lock"
+                  label="비밀번호"
+                  :rules="[
+                    (v) => !!v || '비밀번호를 입력해주세요.',
+                    (v) => v.length > 5 || '6자리 이상 입력해주세요.',
+                  ]"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" class="py-0">
+                <v-text-field
+                  v-model="password.confirm"
+                  type="password"
+                  prepend-inner-icon="mdi-lock"
+                  label="비밀번호 확인"
+                  :rules="[
+                    (v) => !!v || '비밀번호를 입력해주세요.',
+                    (v) => v.length > 5 || '6자리 이상 입력해주세요.',
+                    (v) =>
+                      v == password.password || '비밀번호가 일치하지 않습니다.',
+                  ]"
+                ></v-text-field>
+              </v-col> </v-row
+          ></v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -118,24 +119,27 @@ export default {
   },
   methods: {
     onPassChange() {
-      this.$axios
-        .patch(`${apiPrefix}/users`, {
-          userId: this.userId,
-          password: this.password.confirm,
-        })
-        .then(() => {
-          this.dialog = true;
-          this.dialogTitle = "알림";
-          this.dialogContent = "비밀번호 변경이 완료되었습니다.";
-        })
-        .catch(() => {
-          this.dialog = true;
-          this.dialogTitle = "오류";
-          this.dialogContent = "비밀번호 변경에 실패했습니다.";
-        })
-        .finally(() => {
-          this.passwordDialog = false;
-        });
+      if (this.$refs.loginForm.validate()) {
+        this.$axios
+          .patch(`${apiPrefix}/users`, {
+            userId: this.userId,
+            password: this.password.confirm,
+          })
+          .then(() => {
+            this.dialog = true;
+            this.dialogTitle = "알림";
+            this.dialogContent = "비밀번호 변경이 완료되었습니다.";
+          })
+          .catch(() => {
+            this.dialog = true;
+            this.dialogTitle = "오류";
+            this.dialogContent = "비밀번호 변경에 실패했습니다.";
+          })
+          .finally(() => {
+            this.passwordDialog = false;
+            this.password = { password: "", confirm: "" };
+          });
+      }
     },
     onPassCancel() {
       this.passwordDialog = false;

@@ -152,6 +152,7 @@ export default {
   methods: {
     onSignOut() {
       this.$store.commit("signOut");
+      this.$router.replace("/");
     },
   },
   computed: {

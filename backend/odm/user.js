@@ -4,12 +4,34 @@ const mongoose = require("mongoose"),
 const userSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  userId: { type: String, required: true },
   createdAt: { type: Date, default: new Date() },
   rule: { type: String, default: "user" },
 });
 
 // hash password
 userSchema.pre("save", function (next) {
+  const user = this;
+  if (!user.isModified("password")) return next();
+  bcrypt
+    .genSalt()
+    .then((salt) => {
+      bcrypt
+        .hash(user.password, salt)
+        .then((hashed) => {
+          user.password = hashed;
+          next();
+        })
+        .catch((err) => {
+          next(err);
+        });
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+// hash password
+userSchema.pre("update", function (next) {
   const user = this;
   if (!user.isModified("password")) return next();
   bcrypt

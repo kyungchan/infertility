@@ -11,6 +11,7 @@ export default new Vuex.Store({
   },
   mutations: {
     signIn(state, user) {
+      console.log(user);
       state.userId = user.userId;
       state.rule = user.rule;
       Vue.$cookies.set("userId", user.userId, "1h"); // 토큰과 같은 시간

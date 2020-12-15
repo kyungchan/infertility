@@ -90,9 +90,9 @@ const router = new VueRouter({
 
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (Vue.$cookies.get("userId"))
-    axios
+    await axios
       .post(`${apiPrefix}/auth/refresh`)
       .then((res) => {
         store.commit("signIn", res.data.user);

@@ -9,8 +9,8 @@ router.post("/check", function (req, res) {
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       res.status(200).json({
-        rule: decoded.rule,
         userId: decoded.userId,
+        rule: decoded.rule,
       });
     })
     .catch((err) => {
@@ -37,8 +37,8 @@ router.post("/refresh", function (req, res) {
             .status(200)
             .json({
               user: {
-                rule: decoded.rule,
                 userId: decoded.userId,
+                rule: decoded.rule,
               },
             });
         })
@@ -79,8 +79,8 @@ router.post("/signin", function (req, res) {
                 .status(200)
                 .json({
                   user: {
-                    rule: user.rule,
                     userId: user.userId,
+                    rule: user.rule,
                   },
                 });
             })

@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const postsRouter = require("./routes/posts");
 const authRouter = require("./routes/auth");
 const indexRouter = require("./routes/index");
+const userRouter = require("./routes/users");
 
 const dbconnect = require("./modules/dbconnect");
 
@@ -24,6 +25,7 @@ dbconnect();
 
 app.use("/posts", postsRouter);
 app.use("/auth", authRouter);
+app.use("/users", userRouter);
 app.use("/", indexRouter);
 
 module.exports = app;
