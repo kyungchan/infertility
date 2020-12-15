@@ -16,7 +16,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="passwordDialog" max-width="500px">
+    <v-dialog v-model="passwordDialog" persistent max-width="500px">
       <v-card>
         <v-card-title> 비밀번호 변경 </v-card-title>
         <v-card-text>
@@ -136,14 +136,16 @@ export default {
             this.dialogContent = "비밀번호 변경에 실패했습니다.";
           })
           .finally(() => {
-            this.passwordDialog = false;
+            this.$refs.loginForm.reset();
             this.password = { password: "", confirm: "" };
+            this.passwordDialog = false;
           });
       }
     },
     onPassCancel() {
-      this.passwordDialog = false;
+      this.$refs.loginForm.reset();
       this.password = { password: "", confirm: "" };
+      this.passwordDialog = false;
     },
   },
 };

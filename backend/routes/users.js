@@ -11,13 +11,14 @@ router.patch("/", function (req, res) {
       if (decoded.rule == "admin")
         userModel
           .updateOne(
-            { userId: req.body.userId },
+            { userId: decoded.userId },
             { password: req.body.password }
           )
           .then(() => {
             res.sendStatus(200);
           })
-          .catch(() => {
+          .catch((err) => {
+            console.log(err);
             res.sendStatus(404);
           });
     })

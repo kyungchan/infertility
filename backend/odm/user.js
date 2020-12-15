@@ -31,16 +31,15 @@ userSchema.pre("save", function (next) {
     });
 });
 // hash password
-userSchema.pre("update", function (next) {
+userSchema.pre("updateOne", function (next) {
   const user = this;
-  if (!user.isModified("password")) return next();
   bcrypt
     .genSalt()
     .then((salt) => {
       bcrypt
-        .hash(user.password, salt)
+        .hash(user._update.password, salt)
         .then((hashed) => {
-          user.password = hashed;
+          user._update.password = hashed;
           next();
         })
         .catch((err) => {
