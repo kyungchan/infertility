@@ -1,9 +1,12 @@
 <template>
   <v-container class="fill-height">
     <v-row align="center" justify="center">
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="8" md="6">
+        <v-alert type="success" v-if="register" dense>
+          회원이 되신걸 축하드립니다.
+        </v-alert>
         <v-card>
-          <v-card-title> Login </v-card-title>
+          <v-card-title>로그인</v-card-title>
           <v-card-text>
             <v-form ref="signInForm">
               <v-row>
@@ -11,7 +14,7 @@
                   <v-text-field
                     label="ID"
                     prepend-inner-icon="mdi-account"
-                    v-model="loginModel.userId"
+                    v-model="loginModel.id"
                     :rules="[
                       (v) => !!v || 'ID를 입력하세요.',
                       (v) =>
@@ -37,7 +40,12 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="onLogin" tile depressed>Login</v-btn>
+            <v-btn color="primary" tile depressed to="/register">
+              회원가입
+            </v-btn>
+            <v-btn color="primary" @click="onLogin" tile depressed>
+              로그인
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -48,10 +56,11 @@
 <script>
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 export default {
+  props: ["register"],
   data: () => ({
     loginError: false,
     loginModel: {
-      userId: "",
+      id: "",
       password: "",
     },
   }),

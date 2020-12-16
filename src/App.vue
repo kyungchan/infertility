@@ -5,23 +5,45 @@
       <v-toolbar-title @click="$router.push('/')">Infertility</v-toolbar-title>
 
       <v-spacer></v-spacer>
-
+      <v-btn v-if="!userRule" to="/login" color="primary" elevation="0">
+        <v-icon left>mdi-login</v-icon>Login
+      </v-btn>
       <v-menu offset-y v-if="userRule == 'admin'">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" elevation="0" v-bind="attrs" v-on="on">
-            Admin
+            <v-icon left>mdi-account-circle</v-icon>Admin
           </v-btn>
         </template>
         <v-list>
           <v-list-item dense to="/admin">
             <v-list-item-title
-              ><v-icon left>mdi-account-circle</v-icon>Admin
+              ><v-icon left>mdi-card-account-details</v-icon>Admin
               Page</v-list-item-title
             >
           </v-list-item>
           <v-list-item @click="onSignOut" dense>
             <v-list-item-title
-              ><v-icon left>mdi-logout</v-icon>Sign Out</v-list-item-title
+              ><v-icon left>mdi-logout</v-icon>로그아웃</v-list-item-title
+            >
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-menu offset-y v-else-if="userRule">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="primary" elevation="0" v-bind="attrs" v-on="on">
+            <v-icon left>mdi-account-circle</v-icon>{{ userName }}
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item dense to="/mypage">
+            <v-list-item-title>
+              <v-icon left>mdi-card-account-details</v-icon>
+              내 계정
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="onSignOut" dense>
+            <v-list-item-title
+              ><v-icon left>mdi-logout</v-icon>로그아웃</v-list-item-title
             >
           </v-list-item>
         </v-list>
@@ -30,7 +52,24 @@
 
     <v-navigation-drawer v-model="drawer" app temporary>
       <v-list nav dense>
-        <v-list-item link to="/" active-class="teal--text">
+        <v-list-item>
+          <v-row class="caption">
+            <v-col cols="4" class="pa-0 text-center"
+              >최근 게시글
+              <div class="subtitle-2">7</div></v-col
+            >
+            <v-col cols="4" class="pa-0 text-center"
+              >읽은 게시글
+              <div class="subtitle-2">7</div></v-col
+            >
+            <v-col cols="4" class="pa-0 text-center"
+              >저장한 게시물
+              <div class="subtitle-2">7</div></v-col
+            >
+          </v-row>
+        </v-list-item>
+        <v-divider class="mb-2"></v-divider>
+        <v-list-item link to="/" color="primary">
           <v-list-item-icon>
             <v-icon>mdi-home</v-icon>
           </v-list-item-icon>
@@ -94,7 +133,7 @@
               <v-list-item-title> 정서 건강 중재 </v-list-item-title>
             </v-list-item>
 
-            <v-list-item link to="/survey">
+            <v-list-item link to="/test">
               <v-list-item-title> 나의 심리 상태 검사 </v-list-item-title>
             </v-list-item>
           </v-list-group>
@@ -152,11 +191,15 @@ export default {
   methods: {
     onSignOut() {
       this.$store.commit("signOut");
+      this.$router.replace("/");
     },
   },
   computed: {
     userRule() {
       return this.$store.state.rule;
+    },
+    userName() {
+      return this.$store.state.name;
     },
   },
 };

@@ -304,7 +304,7 @@ export default {
           new OrderedList(),
           new TodoItem(),
           new TodoList(),
-          new Link(),
+          new Link({ rel: "", target: "_blank" }),
           new Bold(),
           new Code(),
           new Italic(),

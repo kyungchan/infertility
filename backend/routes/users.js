@@ -1,16 +1,41 @@
 const express = require("express");
 const router = express.Router();
 
+const auth = require("../modules/authorization.js");
 const userModel = require("../odm/user");
 
-router.patch("/", function (req, res) {
+router.post("/", function (req, res) {
   userModel
-    .update({ userId: req.body.userId }, { password: req.body.password })
+    .create({
+      id: req.body.id,
+      password: req.body.password,
+      name: req.body.name,
+    })
     .then(() => {
-      res.sendStatus(200);
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      if (err.code == 11000) res.sendStatus(409);
+      else res.sendStatus(400);
+    });
+});
+
+router.patch("/", function (req, res) {
+  auth
+    .decodeToken(req.cookies.token)
+    .then((decoded) => {
+      userModel
+        .updateOne({ id: decoded.id }, { password: req.body.password })
+        .then(() => {
+          res.sendStatus(200);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.sendStatus(404);
+        });
     })
     .catch(() => {
-      res.sendStatus(404);
+      res.sendStatus(401);
     });
 });
 

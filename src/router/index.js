@@ -11,9 +11,11 @@ import Home from "../views/Home.vue";
 import Editor from "..//views/Editor.vue";
 import Board from "..//views/Board.vue";
 import Article from "..//views/Article.vue";
-import Survey from "..//views/Survey.vue";
+import Test from "..//views/Test.vue";
+import TestList from "..//views/TestList.vue";
+import Login from "../views/Login";
+import Register from "../views/Register";
 
-import AdminLogin from "../views/Admin/Login";
 import Admin from "../views/Admin/Admin";
 
 import ErrorPage from "..//views/Error.vue";
@@ -63,9 +65,12 @@ const routes = [
     props: (route) => ({ board: boards[route.params.id], editMode: true }),
   },
   {
-    path: "/survey",
-    name: "Survey",
-    component: Survey,
+    path: "/test",
+    component: TestList,
+  },
+  {
+    path: "/test/:testId",
+    component: Test,
   },
   {
     path: "/admin",
@@ -73,8 +78,14 @@ const routes = [
     component: Admin,
   },
   {
-    path: "/admin/login",
-    component: AdminLogin,
+    path: "/login",
+    name: "login",
+    props: true,
+    component: Login,
+  },
+  {
+    path: "/register",
+    component: Register,
   },
   {
     path: "*",
@@ -90,9 +101,9 @@ const router = new VueRouter({
 
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (Vue.$cookies.get("userId"))
-    axios
+    await axios
       .post(`${apiPrefix}/auth/refresh`)
       .then((res) => {
         store.commit("signIn", res.data.user);

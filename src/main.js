@@ -29,6 +29,7 @@ Axios.interceptors.response.use(
     if (err.response.status === 401) {
       Vue.$cookies.remove("userId");
       store.commit("signOut");
+      router.replace("/error");
       return;
     }
     return Promise.reject(err);

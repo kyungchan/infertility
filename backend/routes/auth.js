@@ -9,8 +9,10 @@ router.post("/check", function (req, res) {
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       res.status(200).json({
+        id: decoded.id,
         rule: decoded.rule,
-        userId: decoded.userId,
+        uid: decoded.uid,
+        name: decoded.name,
       });
     })
     .catch((err) => {
@@ -25,8 +27,10 @@ router.post("/refresh", function (req, res) {
     .then((decoded) => {
       auth
         .createToken({
-          userId: decoded.userId,
+          id: decoded.id,
           rule: decoded.rule,
+          uid: decoded.uid,
+          name: decoded.name,
         })
         .then((token) => {
           res
@@ -37,8 +41,10 @@ router.post("/refresh", function (req, res) {
             .status(200)
             .json({
               user: {
+                id: decoded.id,
                 rule: decoded.rule,
-                userId: decoded.userId,
+                uid: decoded.uid,
+                name: decoded.name,
               },
             });
         })
@@ -56,9 +62,9 @@ router.post("/refresh", function (req, res) {
 
 router.post("/signin", function (req, res) {
   userModel
-    .findOne({ userId: req.body.userId }, { _id: 0, __v: 0 })
-    .exec()
+    .findOne({ id: req.body.id })
     .then((user) => {
+      console.log(user);
       user.comparePassword(req.body.password, (err, isMatch) => {
         if (err) {
           console.log(err);
@@ -67,8 +73,10 @@ router.post("/signin", function (req, res) {
         if (isMatch) {
           auth
             .createToken({
-              userId: user.userId,
+              id: user.id,
               rule: user.rule,
+              uid: user._id,
+              name: user.name,
             })
             .then((token) => {
               res
@@ -79,8 +87,10 @@ router.post("/signin", function (req, res) {
                 .status(200)
                 .json({
                   user: {
+                    id: user.id,
                     rule: user.rule,
-                    userId: user.userId,
+                    uid: user._id,
+                    name: user.name,
                   },
                 });
             })

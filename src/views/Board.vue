@@ -56,7 +56,7 @@
               <board-item
                 :title="post.title"
                 :preview="post.preview"
-                :date="$moment(post.createdAt).format('YYYY-MM-DD hh:mm:ss')"
+                :date="$moment(post.createdAt).format('YYYY-MM-DD HH:mm:ss')"
                 :view="post.view"
                 color="indigo"
               ></board-item>
