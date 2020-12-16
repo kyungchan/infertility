@@ -1,7 +1,10 @@
 <template>
   <v-container class="fill-height">
     <v-row align="center" justify="center">
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="8" md="6">
+        <v-alert type="success" v-if="register" dense>
+          회원이 되신걸 축하드립니다.
+        </v-alert>
         <v-card>
           <v-card-title>로그인</v-card-title>
           <v-card-text>
@@ -53,6 +56,7 @@
 <script>
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 export default {
+  props: ["register"],
   data: () => ({
     loginError: false,
     loginModel: {

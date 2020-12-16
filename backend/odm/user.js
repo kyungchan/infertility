@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   createdAt: { type: Date, default: new Date() },
   rule: { type: String, default: "user" },
+  like: { type: Array },
 });
 
 // hash password

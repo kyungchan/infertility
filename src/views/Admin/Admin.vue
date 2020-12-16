@@ -63,7 +63,12 @@
     </v-dialog>
     <v-dialog v-model="testResultDialog" persistent max-width="800px">
       <v-card>
-        <v-card-title> 검사 결과 조회 </v-card-title>
+        <v-card-title>
+          검사 결과 조회 <v-spacer></v-spacer>
+          <v-btn icon @click="testResultDialog = false">
+            <v-icon>mdi-close</v-icon></v-btn
+          >
+        </v-card-title>
         <v-card-text>
           <v-row>
             <v-col cols="12" class="py-0" align="end">
@@ -219,12 +224,6 @@ export default {
         )
         .then((result) => {
           const surveyPDF = new SurveyPDF.SurveyPDF(result.data, options);
-          surveyPDF.onRenderHeader.add(function (_, canvas) {
-            canvas.drawText({
-              text: "123",
-              fontSize: 10,
-            });
-          });
           surveyPDF.data = answer;
           surveyPDF.save("as");
         })

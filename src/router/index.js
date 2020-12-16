@@ -79,6 +79,8 @@ const routes = [
   },
   {
     path: "/login",
+    name: "login",
+    props: true,
     component: Login,
   },
   {

@@ -36,38 +36,43 @@
           }}</span>
         </div>
         <v-row class="px-3">
-          <div class="text-subtitle-2 mt-2">
+          <v-col
+            class="align-center pa-0 d-flex text-subtitle-2 mt-2"
+            cols="12"
+          >
             <v-icon left>mdi-file-find</v-icon>
             <span style="vertical-align: middle">{{ post.view }}</span>
-          </div>
-          <v-spacer></v-spacer>
-
-          <v-menu offset-y v-if="userRule == 'admin'">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                :to="`../${$route.params.id}/${$route.params.postId}/editor`"
-                dense
-              >
-                <v-list-item-title>
-                  <v-icon left>mdi-pencil</v-icon>수정</v-list-item-title
+            <v-spacer></v-spacer>
+            <v-btn icon v-if="userRule">
+              <v-icon color="red">mdi-heart</v-icon>
+            </v-btn>
+            <v-menu offset-y v-if="userRule == 'admin'">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  :to="`../${$route.params.id}/${$route.params.postId}/editor`"
+                  dense
                 >
-              </v-list-item>
-              <v-list-item
-                v-if="board.code != 0"
-                dense
-                @click="deleteDialog = true"
-              >
-                <v-list-item-title>
-                  <v-icon left>mdi-delete</v-icon>삭제
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+                  <v-list-item-title>
+                    <v-icon left>mdi-pencil</v-icon>수정</v-list-item-title
+                  >
+                </v-list-item>
+                <v-list-item
+                  v-if="board.code != 0"
+                  dense
+                  @click="deleteDialog = true"
+                >
+                  <v-list-item-title>
+                    <v-icon left>mdi-delete</v-icon>삭제
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-col>
         </v-row>
       </v-col>
 
