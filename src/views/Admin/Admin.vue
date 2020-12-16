@@ -61,6 +61,39 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="testResultDialog" persistent max-width="800px">
+      <v-card>
+        <v-card-title> 검사 결과 조회 </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" class="py-0" align="end">
+              <v-spacer></v-spacer>
+              <v-btn color="primary" tile depressed>
+                <v-icon left>mdi-download</v-icon>전체 CSV
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-data-table
+            :headers="testResultHeaders"
+            :items="testData[selectedTestIndex].answers"
+          >
+            <template v-slot:[`item.createdAt`]="{ item }">
+              {{ $moment(item.createdAt).format("YYYY-MM-DD HH:mm:ss") }}
+            </template>
+            <template v-slot:[`item.pdf`]="{ item }">
+              <v-btn
+                color="primary"
+                icon
+                tile
+                depressed
+                @click="onPdfDownload(item.answer)"
+                ><v-icon>mdi-download</v-icon></v-btn
+              >
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-expansion-panels v-model="panel">
       <v-expansion-panel>
         <v-expansion-panel-header>
@@ -91,10 +124,21 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat.
+          <v-data-table disable-sort :headers="headers" :items="testData">
+            <template v-slot:[`item.answers`]="{ item }">
+              {{ Object.keys(item.answers).length }}
+            </template>
+            <template v-slot:[`item.show`]="{ item }">
+              <v-btn
+                color="primary"
+                tile
+                depressed
+                @click="onTestSelect(item.index)"
+              >
+                보기</v-btn
+              >
+            </template>
+          </v-data-table>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -102,6 +146,10 @@
 </template>
 
 <script>
+import axios from "axios";
+import * as SurveyPDF from "survey-pdf";
+import font from "../../assets/survey/pdfFont.txt";
+
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 export default {
   data: () => ({
@@ -110,14 +158,85 @@ export default {
     dialog: false,
     dialogTitle: "",
     dialogContent: "",
+    testData: {},
+    selectedTestIndex: 0,
+    testResultDialog: false,
     password: { password: "", confirm: "" },
   }),
+  beforeRouteEnter(to, from, next) {
+    axios
+      .get(`${apiPrefix}/tests`)
+      .then((result) => {
+        next((vm) => {
+          vm.testData = result.data;
+          vm.testData.forEach((e, i) => {
+            e.index = i;
+          });
+        });
+      })
+      .catch(() => {
+        next((vm) => {
+          vm.$router.replace("/error");
+        });
+      });
+  },
   computed: {
+    headers() {
+      return [
+        { text: "검사 이름", value: "title" },
+        { text: "답변 수", value: "answers" },
+        { text: "답변 보기", value: "show" },
+      ];
+    },
+    testResultHeaders() {
+      return [
+        { text: "답변 시간", value: "createdAt" },
+        { text: "점수", value: "score" },
+        { text: "PDF", value: "pdf" },
+      ];
+    },
     userId() {
       return this.$store.state.userId;
     },
   },
   methods: {
+    onPdfDownload(answer) {
+      let options = {
+        fontSize: 12,
+        margins: {
+          left: 10,
+          right: 10,
+          top: 10,
+          bot: 10,
+        },
+        format: [210, 297],
+        fontName: "NanumBarunGothicSubset",
+        base64Normal: font,
+      };
+      this.$axios
+        .get(
+          `${apiPrefix}/tests/${this.testData[this.selectedTestIndex]._id}/data`
+        )
+        .then((result) => {
+          const surveyPDF = new SurveyPDF.SurveyPDF(result.data, options);
+          surveyPDF.onRenderHeader.add(function (_, canvas) {
+            canvas.drawText({
+              text: "123",
+              fontSize: 10,
+            });
+          });
+          surveyPDF.data = answer;
+          surveyPDF.save("as");
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$router.replace("/error");
+        });
+    },
+    onTestSelect(index) {
+      this.testResultDialog = true;
+      this.selectedTestIndex = index;
+    },
     onPassChange() {
       if (this.$refs.loginForm.validate()) {
         this.$axios

@@ -32,7 +32,7 @@
         <div class="text-subtitle-2 mt-2">
           <v-icon left>mdi-calendar-month</v-icon>
           <span style="vertical-align: middle">{{
-            $moment(post.createdAt).format("YYYY-MM-DD hh:mm:ss")
+            $moment(post.createdAt).format("YYYY-MM-DD HH:mm:ss")
           }}</span>
         </div>
         <v-row class="px-3">

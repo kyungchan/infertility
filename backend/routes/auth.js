@@ -11,6 +11,8 @@ router.post("/check", function (req, res) {
       res.status(200).json({
         id: decoded.id,
         rule: decoded.rule,
+        uid: decoded.uid,
+        name: decoded.name,
       });
     })
     .catch((err) => {
@@ -27,6 +29,8 @@ router.post("/refresh", function (req, res) {
         .createToken({
           id: decoded.id,
           rule: decoded.rule,
+          uid: decoded.uid,
+          name: decoded.name,
         })
         .then((token) => {
           res
@@ -39,6 +43,8 @@ router.post("/refresh", function (req, res) {
               user: {
                 id: decoded.id,
                 rule: decoded.rule,
+                uid: decoded.uid,
+                name: decoded.name,
               },
             });
         })
@@ -56,8 +62,9 @@ router.post("/refresh", function (req, res) {
 
 router.post("/signin", function (req, res) {
   userModel
-    .findOne({ id: req.body.id }, { _id: 0, __v: 0 })
+    .findOne({ id: req.body.id })
     .then((user) => {
+      console.log(user);
       user.comparePassword(req.body.password, (err, isMatch) => {
         if (err) {
           console.log(err);
@@ -68,6 +75,8 @@ router.post("/signin", function (req, res) {
             .createToken({
               id: user.id,
               rule: user.rule,
+              uid: user._id,
+              name: user.name,
             })
             .then((token) => {
               res
@@ -80,6 +89,8 @@ router.post("/signin", function (req, res) {
                   user: {
                     id: user.id,
                     rule: user.rule,
+                    uid: user._id,
+                    name: user.name,
                   },
                 });
             })

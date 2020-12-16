@@ -11,9 +11,10 @@ import Home from "../views/Home.vue";
 import Editor from "..//views/Editor.vue";
 import Board from "..//views/Board.vue";
 import Article from "..//views/Article.vue";
-import Survey from "..//views/Survey.vue";
+import Test from "..//views/Test.vue";
+import TestList from "..//views/TestList.vue";
 import Login from "../views/Login";
-import Register from "../views/register";
+import Register from "../views/Register";
 
 import Admin from "../views/Admin/Admin";
 
@@ -64,9 +65,12 @@ const routes = [
     props: (route) => ({ board: boards[route.params.id], editMode: true }),
   },
   {
-    path: "/survey",
-    name: "Survey",
-    component: Survey,
+    path: "/test",
+    component: TestList,
+  },
+  {
+    path: "/test/:testId",
+    component: Test,
   },
   {
     path: "/admin",

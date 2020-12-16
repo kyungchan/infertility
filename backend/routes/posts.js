@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const boardModel = require("../odm/post");
+const auth = require("../modules/authorization.js");
 
-const tag = "[boards.js]";
+const tag = "[posts.js]";
 
-router.get("/", async function (req, res) {
+router.get("/", function (req, res) {
   //각 게시판마다 랜덤한 게시글 가져오기
   let o = {};
   o.map =
@@ -64,17 +65,30 @@ router.get("/:boardCode", function (req, res) {
 });
 
 router.post("/:boardCode", function (req, res) {
-  boardModel
-    .create({
-      ...req.body,
-      boardCode: req.params.boardCode,
-    })
-    .then((result) => {
-      res.status(201).json({ _id: result._id });
+  // admin만
+  auth
+    .decodeToken(req.cookies.token)
+    .then((token) => {
+      if (token.rule == "admin") {
+        boardModel
+          .create({
+            ...req.body,
+            boardCode: req.params.boardCode,
+          })
+          .then((result) => {
+            res.status(201).json({ _id: result._id });
+          })
+          .catch((err) => {
+            res.sendStatus(400);
+            console.log(tag, err);
+          });
+      } else {
+        res.sendStatus(401);
+      }
     })
     .catch((err) => {
-      res.sendStatus(400);
       console.log(tag, err);
+      res.sendStatus(401);
     });
 });
 
@@ -93,33 +107,59 @@ router.get("/:boardCode/:postId", function (req, res) {
 });
 
 router.delete("/:boardCode/:postId", function (req, res) {
-  boardModel
-    .deleteOne({
-      _id: req.params.postId,
-    })
-    .then(() => {
-      res.sendStatus(200);
+  // admin만
+  auth
+    .decodeToken(req.cookies.token)
+    .then((token) => {
+      if (token.rule == "admin") {
+        boardModel
+          .deleteOne({
+            _id: req.params.postId,
+          })
+          .then(() => {
+            res.sendStatus(200);
+          })
+          .catch((err) => {
+            console.log(tag, err);
+            res.sendStatus(400);
+          });
+      } else {
+        res.sendStatus(401);
+      }
     })
     .catch((err) => {
       console.log(tag, err);
-      res.sendStatus(400);
+      res.sendStatus(401);
     });
 });
 
 router.patch("/:boardCode/:postId", function (req, res) {
-  boardModel
-    .updateOne(
-      {
-        _id: req.params.postId,
-      },
-      req.body
-    )
-    .then(() => {
-      res.sendStatus(200);
+  // admin만
+  auth
+    .decodeToken(req.cookies.token)
+    .then((token) => {
+      if (token.rule == "admin") {
+        boardModel
+          .updateOne(
+            {
+              _id: req.params.postId,
+            },
+            req.body
+          )
+          .then(() => {
+            res.sendStatus(200);
+          })
+          .catch((err) => {
+            console.log(tag, err);
+            res.sendStatus(400);
+          });
+      } else {
+        req.sendStatus(401);
+      }
     })
     .catch((err) => {
       console.log(tag, err);
-      res.sendStatus(400);
+      req.sendStatus(401);
     });
 });
 

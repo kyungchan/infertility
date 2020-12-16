@@ -116,7 +116,7 @@
               <v-list-item-title> 정서 건강 중재 </v-list-item-title>
             </v-list-item>
 
-            <v-list-item link to="/survey">
+            <v-list-item link to="/test">
               <v-list-item-title> 나의 심리 상태 검사 </v-list-item-title>
             </v-list-item>
           </v-list-group>

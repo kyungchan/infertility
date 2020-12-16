@@ -5,8 +5,10 @@
       {{ title }}
     </v-card-title>
     <v-card-text>
-      <div class="text--secondary caption preview">{{ preview }}</div>
-      <div class="text--secondary caption">
+      <div v-if="preview" class="text--secondary caption preview">
+        {{ preview }}
+      </div>
+      <div v-if="view" class="text--secondary caption">
         {{ `${date}${view ? " | 조회 " + view : ""}` }}
       </div></v-card-text
     >
