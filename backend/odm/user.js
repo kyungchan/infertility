@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: new Date() },
   rule: { type: String, default: "user" },
   like: { type: Array },
+  history: { type: Array },
 });
 
 // hash password

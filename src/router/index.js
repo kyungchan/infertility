@@ -7,16 +7,16 @@ import store from "../store/index.js";
 import NProgress from "nprogress";
 import "../assets/nprogress.css";
 
-import Home from "../views/Home.vue";
-import Editor from "..//views/Editor.vue";
-import Board from "..//views/Board.vue";
-import Article from "..//views/Article.vue";
-import Test from "..//views/Test.vue";
-import TestList from "..//views/TestList.vue";
-import Login from "../views/Login";
-import Register from "../views/Register";
+const Home = () => import("../views/Home.vue");
+const Editor = () => import("..//views/Editor.vue");
+const Board = () => import("..//views/Board.vue");
+const Article = () => import("..//views/Article.vue");
+const Test = () => import("..//views/Test.vue");
+const TestList = () => import("..//views/TestList.vue");
+const Login = () => import("../views/Login");
+const Register = () => import("../views/Register");
 
-import Admin from "../views/Admin/Admin";
+const Admin = () => import("../views/Admin/Admin");
 
 import ErrorPage from "..//views/Error.vue";
 

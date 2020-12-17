@@ -3,7 +3,7 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="6">
         <v-alert type="success" v-if="register" dense>
-          회원이 되신걸 축하드립니다.
+          회원가입이 완료되었습니다.
         </v-alert>
         <v-card>
           <v-card-title>로그인</v-card-title>

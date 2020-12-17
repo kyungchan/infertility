@@ -50,22 +50,37 @@
       </v-menu>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" app temporary>
+    <v-navigation-drawer v-model="drawer" app temporary width="280">
       <v-list nav dense>
         <v-list-item>
           <v-row class="caption">
-            <v-col cols="4" class="pa-0 text-center"
-              >최근 게시글
-              <div class="subtitle-2">7</div></v-col
-            >
-            <v-col cols="4" class="pa-0 text-center"
-              >읽은 게시글
-              <div class="subtitle-2">7</div></v-col
-            >
-            <v-col cols="4" class="pa-0 text-center"
-              >저장한 게시물
-              <div class="subtitle-2">7</div></v-col
-            >
+            <v-col cols="4" class="pa-0 pt-3 text-center">
+              <v-badge bordered right overlap color="secondary">
+                <span slot="badge">7</span>
+                <!--slot can be any component-->
+                <v-icon size="32" color="">mdi-history</v-icon>
+              </v-badge>
+              <div>최근 게시글</div>
+            </v-col>
+            <v-col cols="4" class="pa-0 pt-3 text-center">
+              <v-badge bordered right overlap color="secondary">
+                <span slot="badge">7</span>
+                <!--slot can be any component-->
+                <v-icon size="32" color=""
+                  >mdi-book-open-page-variant-outline
+                </v-icon>
+              </v-badge>
+              <div>읽은 게시글</div>
+              <div></div>
+            </v-col>
+            <v-col cols="4" class="pa-0 pt-3 text-center">
+              <v-badge bordered right overlap color="secondary">
+                <span slot="badge">7</span>
+                <!--slot can be any component-->
+                <v-icon size="32" color="">mdi-heart</v-icon>
+              </v-badge>
+              <div>저장한 게시글</div>
+            </v-col>
           </v-row>
         </v-list-item>
         <v-divider class="mb-2"></v-divider>

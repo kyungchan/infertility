@@ -13,7 +13,6 @@ export default new Vuex.Store({
   },
   mutations: {
     signIn(state, user) {
-      console.log(user);
       state.id = user.id;
       state.rule = user.rule;
       state.uid = user.uid;
