@@ -54,6 +54,7 @@
           >
             <v-slide-y-reverse-transition appear hide-on-leave duration="1000">
               <board-item
+                :id="post._id"
                 :title="post.title"
                 :preview="post.preview"
                 :date="$moment(post.createdAt).format('YYYY-MM-DD HH:mm:ss')"
@@ -175,6 +176,12 @@ export default {
 </script>
 
 <style scoped>
+.quad-text-shadow {
+  text-shadow: 0px 0px 4px black, 0px 0px 4px black, 0px 0px 4px black,
+    0px 0px 4px black;
+  word-break: keep-all;
+}
+
 ul {
   list-style: none;
 }

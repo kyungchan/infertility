@@ -94,7 +94,7 @@ router.post("/:boardCode", function (req, res) {
 
 router.get("/:boardCode/:postId", function (req, res) {
   let updateQuery = {};
-  if (req.query.editmode) updateQuery = { $inc: { view: 1 } };
+  if (!req.query.editmode) updateQuery = { $inc: { view: 1 } };
   boardModel
     .findOneAndUpdate({ _id: req.params.postId }, updateQuery, { new: true })
     .then((result) => {

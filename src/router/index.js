@@ -15,6 +15,7 @@ const Test = () => import("..//views/Test.vue");
 const TestList = () => import("..//views/TestList.vue");
 const Login = () => import("../views/Login");
 const Register = () => import("../views/Register");
+const History = () => import("../views/Feed/History");
 
 const Admin = () => import("../views/Admin/Admin");
 
@@ -88,6 +89,10 @@ const routes = [
     component: Register,
   },
   {
+    path: "/history",
+    component: History,
+  },
+  {
     path: "*",
     component: ErrorPage,
   },
@@ -102,16 +107,18 @@ const router = new VueRouter({
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
 router.beforeEach(async (to, from, next) => {
-  if (Vue.$cookies.get("userId"))
+  if (Vue.$cookies.get("userId")) {
     await axios
       .post(`${apiPrefix}/auth/refresh`)
       .then((res) => {
         store.commit("signIn", res.data.user);
+        if (!store.state.likes.length) store.dispatch("getLikes"); // 좋아요한 글은 최초에만 가져옴
       })
       .catch(() => {
         store.commit("signOut");
         return next();
       });
+  }
   if (to.matched.some((record) => record.meta.authRequired)) {
     if (store.state.rule == "admin") return next();
     else {

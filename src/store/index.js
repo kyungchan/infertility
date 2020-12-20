@@ -10,8 +10,12 @@ export default new Vuex.Store({
     name: "",
     id: "",
     rule: "",
+    likes: [],
   },
   mutations: {
+    setLikes(state, likes) {
+      state.likes = likes;
+    },
     signIn(state, user) {
       state.id = user.id;
       state.rule = user.rule;
@@ -28,6 +32,15 @@ export default new Vuex.Store({
       Vue.$cookies.remove("userId");
     },
   },
-  actions: {},
+  actions: {
+    getLikes(context) {
+      axios
+        .get(`${apiPrefix}/users/like?page=0`)
+        .then((result) => {
+          context.commit("setLikes", result.data.likes);
+        })
+        .catch(() => {});
+    },
+  },
   modules: {},
 });

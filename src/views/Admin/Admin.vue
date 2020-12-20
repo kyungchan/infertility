@@ -269,7 +269,7 @@ export default {
     onPassChange() {
       if (this.$refs.loginForm.validate()) {
         this.$axios
-          .patch(`${apiPrefix}/users`, {
+          .patch(`${apiPrefix}/users/password`, {
             userId: this.userId,
             password: this.password.confirm,
           })

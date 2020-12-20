@@ -43,7 +43,7 @@
             <v-icon left>mdi-file-find</v-icon>
             <span style="vertical-align: middle">{{ post.view }}</span>
             <v-spacer></v-spacer>
-            <v-btn icon v-if="userRule">
+            <v-btn icon v-if="userRule" class="hide-btn-afterimage">
               <v-icon color="red">mdi-heart</v-icon>
             </v-btn>
             <v-menu offset-y v-if="userRule == 'admin'">
@@ -158,6 +158,18 @@ export default {
     },
   },
   mounted() {
+    if (this.userRule) {
+      this.$axios
+        .patch(`${apiPrefix}/users/history`, {
+          post: this.$route.params.postId,
+        })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     setTimeout(() => {
       this.$scrollTo.scrollTo(".topScroll", 800, {
         offset: -80,
@@ -204,5 +216,11 @@ export default {
 <style>
 #title {
   word-break: keep-all;
+}
+</style>
+
+<style scoped>
+.hide-btn-afterimage:before {
+  background-color: initial;
 }
 </style>

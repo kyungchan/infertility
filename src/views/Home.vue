@@ -22,7 +22,7 @@
           <v-card tile outlined>
             <v-card-title primary-title class="font-weight-medium pt-2 pb-0">
               <router-link
-                :to="`/boards/0`"
+                to=""
                 :class="`pink--text`"
                 class="text-decoration-none"
               >
