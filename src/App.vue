@@ -56,23 +56,16 @@
           <v-row class="caption">
             <v-col cols="4" class="pa-0 text-center">
               <v-list-item link to="/history" class="pt-3 d-block">
-                <v-badge bordered right overlap color="secondary">
-                  <span slot="badge">7</span>
-                  <!--slot can be any component-->
-                  <v-icon size="30" color="">mdi-history</v-icon>
-                </v-badge>
+                <v-icon size="30" color="">mdi-history</v-icon>
                 <div>최근 게시글</div>
               </v-list-item>
             </v-col>
             <v-col cols="4" class="pa-0 text-center">
               <v-list-item link class="pt-3 d-block">
-                <v-badge bordered right overlap color="secondary">
-                  <span slot="badge">7</span>
-                  <!--slot can be any component-->
-                  <v-icon size="30" color=""
-                    >mdi-book-open-page-variant-outline
-                  </v-icon>
-                </v-badge>
+                <!--slot can be any component-->
+                <v-icon size="30" color=""
+                  >mdi-book-open-page-variant-outline
+                </v-icon>
                 <div>읽은 게시글</div>
               </v-list-item>
             </v-col>
@@ -153,7 +146,7 @@
               <v-list-item-title> 정서 건강 중재 </v-list-item-title>
             </v-list-item>
 
-            <v-list-item link to="/test">
+            <v-list-item link to="/test" v-if="userRule">
               <v-list-item-title> 나의 심리 상태 검사 </v-list-item-title>
             </v-list-item>
           </v-list-group>

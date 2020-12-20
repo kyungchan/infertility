@@ -17,7 +17,7 @@ const Login = () => import("../views/Login");
 const Register = () => import("../views/Register");
 const History = () => import("../views/Feed/History");
 const Likes = () => import("../views/Feed/Like");
-
+const Mypage = () => import("../views/Mypage");
 const Admin = () => import("../views/Admin/Admin");
 
 import ErrorPage from "..//views/Error.vue";
@@ -49,7 +49,7 @@ const routes = [
   {
     path: "/boards/:id/editor",
     name: "Editor",
-    meta: { authRequired: true },
+    meta: { adminRequired: true },
     component: Editor,
     props: (route) => ({ board: boards[route.params.id] }),
   },
@@ -62,21 +62,23 @@ const routes = [
   {
     path: "/boards/:id/:postId/editor",
     name: "ArticleEdit",
-    meta: { authRequired: true },
+    meta: { adminRequired: true },
     component: Editor,
     props: (route) => ({ board: boards[route.params.id], editMode: true }),
   },
   {
     path: "/test",
     component: TestList,
+    meta: { loginRequired: true },
   },
   {
     path: "/test/:testId",
     component: Test,
+    meta: { loginRequired: true },
   },
   {
     path: "/admin",
-    meta: { authRequired: true },
+    meta: { adminRequired: true },
     component: Admin,
   },
   {
@@ -86,16 +88,22 @@ const routes = [
     component: Login,
   },
   {
+    path: "/mypage",
+    component: Mypage,
+  },
+  {
     path: "/register",
     component: Register,
   },
   {
     path: "/history",
     component: History,
+    meta: { loginRequired: true },
   },
   {
     path: "/likes",
     component: Likes,
+    meta: { loginRequired: true },
   },
   {
     path: "*",
@@ -124,7 +132,15 @@ router.beforeEach(async (to, from, next) => {
         return next();
       });
   }
-  if (to.matched.some((record) => record.meta.authRequired)) {
+  //로그인이 필요한 페이지
+  if (to.matched.some((record) => record.meta.loginRequired)) {
+    if (store.state.rule) return next();
+    else {
+      return next({ path: "/error" });
+    }
+  }
+  //admin권한이 필요한 페이지
+  if (to.matched.some((record) => record.meta.adminRequired)) {
     if (store.state.rule == "admin") return next();
     else {
       return next({ path: "/error" });
