@@ -7,16 +7,18 @@ import store from "../store/index.js";
 import NProgress from "nprogress";
 import "../assets/nprogress.css";
 
-import Home from "../views/Home.vue";
-import Editor from "..//views/Editor.vue";
-import Board from "..//views/Board.vue";
-import Article from "..//views/Article.vue";
-import Test from "..//views/Test.vue";
-import TestList from "..//views/TestList.vue";
-import Login from "../views/Login";
-import Register from "../views/Register";
-
-import Admin from "../views/Admin/Admin";
+const Home = () => import("../views/Home.vue");
+const Editor = () => import("..//views/Editor.vue");
+const Board = () => import("..//views/Board.vue");
+const Article = () => import("..//views/Article.vue");
+const Test = () => import("..//views/Test.vue");
+const TestList = () => import("..//views/TestList.vue");
+const Login = () => import("../views/Login");
+const Register = () => import("../views/Register");
+const History = () => import("../views/Feed/History");
+const Likes = () => import("../views/Feed/Like");
+const Mypage = () => import("../views/Mypage");
+const Admin = () => import("../views/Admin/Admin");
 
 import ErrorPage from "..//views/Error.vue";
 
@@ -47,7 +49,7 @@ const routes = [
   {
     path: "/boards/:id/editor",
     name: "Editor",
-    meta: { authRequired: true },
+    meta: { adminRequired: true },
     component: Editor,
     props: (route) => ({ board: boards[route.params.id] }),
   },
@@ -60,21 +62,23 @@ const routes = [
   {
     path: "/boards/:id/:postId/editor",
     name: "ArticleEdit",
-    meta: { authRequired: true },
+    meta: { adminRequired: true },
     component: Editor,
     props: (route) => ({ board: boards[route.params.id], editMode: true }),
   },
   {
     path: "/test",
     component: TestList,
+    meta: { loginRequired: true },
   },
   {
     path: "/test/:testId",
     component: Test,
+    meta: { loginRequired: true },
   },
   {
     path: "/admin",
-    meta: { authRequired: true },
+    meta: { adminRequired: true },
     component: Admin,
   },
   {
@@ -84,8 +88,22 @@ const routes = [
     component: Login,
   },
   {
+    path: "/mypage",
+    component: Mypage,
+  },
+  {
     path: "/register",
     component: Register,
+  },
+  {
+    path: "/history",
+    component: History,
+    meta: { loginRequired: true },
+  },
+  {
+    path: "/likes",
+    component: Likes,
+    meta: { loginRequired: true },
   },
   {
     path: "*",
@@ -102,17 +120,27 @@ const router = new VueRouter({
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 // Auth navigation gaurd
 router.beforeEach(async (to, from, next) => {
-  if (Vue.$cookies.get("userId"))
+  if (Vue.$cookies.get("userId")) {
     await axios
       .post(`${apiPrefix}/auth/refresh`)
       .then((res) => {
         store.commit("signIn", res.data.user);
+        if (!store.state.likes.length) store.dispatch("getLikes"); // 좋아요한 글은 최초에만 가져옴
       })
       .catch(() => {
         store.commit("signOut");
         return next();
       });
-  if (to.matched.some((record) => record.meta.authRequired)) {
+  }
+  //로그인이 필요한 페이지
+  if (to.matched.some((record) => record.meta.loginRequired)) {
+    if (store.state.rule) return next();
+    else {
+      return next({ path: "/error" });
+    }
+  }
+  //admin권한이 필요한 페이지
+  if (to.matched.some((record) => record.meta.adminRequired)) {
     if (store.state.rule == "admin") return next();
     else {
       return next({ path: "/error" });

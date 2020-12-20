@@ -63,7 +63,9 @@
             <v-btn color="primary" @click="onRegister" tile depressed
               >회원가입</v-btn
             >
-            <v-btn color="primary" tile outlined>취소</v-btn>
+            <v-btn color="primary" @click="$router.go(-1)" tile outlined
+              >취소</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-col>

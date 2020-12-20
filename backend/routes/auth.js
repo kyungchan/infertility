@@ -64,7 +64,6 @@ router.post("/signin", function (req, res) {
   userModel
     .findOne({ id: req.body.id })
     .then((user) => {
-      console.log(user);
       user.comparePassword(req.body.password, (err, isMatch) => {
         if (err) {
           console.log(err);

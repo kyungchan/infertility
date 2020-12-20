@@ -7,22 +7,64 @@
       :color="color"
       border="left"
       elevation="0"
-      class="py-0"
+      class="py-0 pr-0"
     >
-      <div class="title subtitle-2 font-weight-bold">{{ title }}</div>
+      <div class="one-line text--secondary caption">{{ subtitle }}</div>
+      <div class="one-line subtitle-2 font-weight-bold">{{ title }}</div>
       <div class="text--secondary caption">{{ date }}</div>
+      <v-row class="mx-0">
+        <div class="one-line text--secondary caption">{{ content }}</div>
+        <v-spacer></v-spacer>
+        <v-btn
+          v-if="postId"
+          @click.prevent="onLike"
+          :color="like ? 'red' : ''"
+          icon
+        >
+          <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
+        </v-btn>
+      </v-row>
     </v-alert>
   </router-link>
 </template>
 
 <script>
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
+
 export default {
-  props: ["color", "title", "date", "link"],
+  methods: {
+    onLike() {
+      this.$axios
+        .post(`${apiPrefix}/users/likes`, {
+          set: !this.like,
+          postId: this.postId,
+        })
+        .then(() => {
+          this.like = !this.like;
+          this.$store.dispatch("getLikes");
+        });
+    },
+  },
+  computed: {
+    getLike() {
+      return this.$store.state.likes;
+    },
+  },
+  mounted() {
+    if (this.postId) this.like = this.getLike.includes(this.postId);
+  },
+  data: () => ({
+    like: false,
+  }),
+  props: ["color", "title", "date", "link", "content", "subtitle", "postId"],
 };
 </script>
 
 <style scoped>
-.title {
+.v-btn:before {
+  background-color: initial;
+}
+.one-line {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;

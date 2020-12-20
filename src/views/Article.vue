@@ -43,8 +43,13 @@
             <v-icon left>mdi-file-find</v-icon>
             <span style="vertical-align: middle">{{ post.view }}</span>
             <v-spacer></v-spacer>
-            <v-btn icon v-if="userRule">
-              <v-icon color="red">mdi-heart</v-icon>
+            <v-btn
+              class="mt-n2"
+              @click.prevent="onLike"
+              :color="like ? 'red' : ''"
+              icon
+            >
+              <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
             </v-btn>
             <v-menu offset-y v-if="userRule == 'admin'">
               <template v-slot:activator="{ on, attrs }">
@@ -110,7 +115,7 @@ const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // produc
 export default {
   components: { EditorContent },
   props: ["board"],
-  data: () => ({ editor: null, post: {}, deleteDialog: false }),
+  data: () => ({ editor: null, post: {}, deleteDialog: false, like: false }),
 
   beforeRouteUpdate(to, from, next) {
     axios
@@ -139,6 +144,17 @@ export default {
       });
   },
   methods: {
+    onLike() {
+      this.$axios
+        .post(`${apiPrefix}/users/likes`, {
+          set: !this.like,
+          postId: this.id,
+        })
+        .then(() => {
+          this.like = !this.like;
+          this.$store.dispatch("getLikes");
+        });
+    },
     onDelete() {
       this.$axios
         .delete(
@@ -156,8 +172,24 @@ export default {
     userRule() {
       return this.$store.state.rule;
     },
+    getLike() {
+      return this.$store.state.likes;
+    },
   },
   mounted() {
+    this.like = this.getLike.includes(this.id);
+    if (this.userRule) {
+      this.$axios
+        .patch(`${apiPrefix}/users/history`, {
+          post: this.$route.params.postId,
+        })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     setTimeout(() => {
       this.$scrollTo.scrollTo(".topScroll", 800, {
         offset: -80,
@@ -204,5 +236,11 @@ export default {
 <style>
 #title {
   word-break: keep-all;
+}
+</style>
+
+<style scoped>
+.hide-btn-afterimage:before {
+  background-color: initial;
 }
 </style>

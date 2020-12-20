@@ -5,6 +5,21 @@
       <v-toolbar-title @click="$router.push('/')">Infertility</v-toolbar-title>
 
       <v-spacer></v-spacer>
+      <v-fade-transition>
+        <v-text-field
+          outlined
+          dense
+          hide-details=""
+          placeholder="검색"
+          append-icon="mdi-magnify"
+          @click:append="onSearch('top')"
+          @keydown.enter="onSearch('top')"
+          v-model="topSearch"
+          filled
+          v-show="this.$vuetify.breakpoint.smAndUp"
+          style="max-width: 220px"
+        ></v-text-field>
+      </v-fade-transition>
       <v-btn v-if="!userRule" to="/login" color="primary" elevation="0">
         <v-icon left>mdi-login</v-icon>Login
       </v-btn>
@@ -50,25 +65,52 @@
       </v-menu>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" app temporary>
+    <v-navigation-drawer v-model="drawer" app temporary width="280">
       <v-list nav dense>
         <v-list-item>
+          <v-text-field
+            outlined
+            dense
+            rounded
+            hide-details=""
+            placeholder="검색"
+            append-icon="mdi-magnify"
+            @click:append="onSearch('appbar')"
+            @keydown.enter="onSearch('appbar')"
+            v-model="appBarSearch"
+          ></v-text-field>
+        </v-list-item>
+        <v-list-item v-if="this.userRule">
           <v-row class="caption">
-            <v-col cols="4" class="pa-0 text-center"
-              >최근 게시글
-              <div class="subtitle-2">7</div></v-col
-            >
-            <v-col cols="4" class="pa-0 text-center"
-              >읽은 게시글
-              <div class="subtitle-2">7</div></v-col
-            >
-            <v-col cols="4" class="pa-0 text-center"
-              >저장한 게시물
-              <div class="subtitle-2">7</div></v-col
-            >
+            <v-col cols="4" class="pa-0 text-center">
+              <v-list-item link to="/history" class="pt-3 d-block">
+                <v-icon size="30" color="">mdi-history</v-icon>
+                <div>최근 게시글</div>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4" class="pa-0 text-center">
+              <v-list-item link class="pt-3 d-block">
+                <!--slot can be any component-->
+                <v-icon size="30" color=""
+                  >mdi-book-open-page-variant-outline
+                </v-icon>
+                <div>읽은 게시글</div>
+              </v-list-item>
+            </v-col>
+            <v-col cols="4" class="pa-0 text-center">
+              <v-list-item link to="/likes" class="pt-3 d-block">
+                <v-badge bordered right overlap color="secondary">
+                  <span slot="badge">{{ this.likes.length }}</span>
+                  <!--slot can be any component-->
+                  <v-icon size="30" color="">mdi-heart</v-icon>
+                </v-badge>
+                <div>저장한 게시글</div>
+              </v-list-item>
+            </v-col>
           </v-row>
         </v-list-item>
-        <v-divider class="mb-2"></v-divider>
+
+        <v-divider class="my-2"></v-divider>
         <v-list-item link to="/" color="primary">
           <v-list-item-icon>
             <v-icon>mdi-home</v-icon>
@@ -133,7 +175,7 @@
               <v-list-item-title> 정서 건강 중재 </v-list-item-title>
             </v-list-item>
 
-            <v-list-item link to="/test">
+            <v-list-item link to="/test" v-if="userRule">
               <v-list-item-title> 나의 심리 상태 검사 </v-list-item-title>
             </v-list-item>
           </v-list-group>
@@ -187,8 +229,17 @@ export default {
 
   data: () => ({
     drawer: false,
+    appBarSearch: "",
+    topSearch: "",
   }),
   methods: {
+    onSearch(position) {
+      // 상태바인지 앱바안 검색창인지
+      let query = position == "top" ? this.topSearch : this.appBarSearch;
+      this.appBarSearch = "";
+      this.topSearch = "";
+      this.$router.replace(`./search?query=${query}`);
+    },
     onSignOut() {
       this.$store.commit("signOut");
       this.$router.replace("/");
@@ -200,6 +251,9 @@ export default {
     },
     userName() {
       return this.$store.state.name;
+    },
+    likes() {
+      return this.$store.state.likes;
     },
   },
 };

@@ -7,51 +7,38 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   createdAt: { type: Date, default: new Date() },
   rule: { type: String, default: "user" },
-  like: { type: Array },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
+  history: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
 });
 
 // hash password
 userSchema.pre("save", function (next) {
   const user = this;
-  if (!user.isModified("password")) return next();
-  bcrypt
-    .genSalt()
-    .then((salt) => {
-      bcrypt
-        .hash(user.password, salt)
-        .then((hashed) => {
-          user.password = hashed;
-          next();
-        })
-        .catch((err) => {
-          next(err);
-        });
-    })
-    .catch((err) => {
-      next(err);
-    });
-});
-// hash password
-userSchema.pre("updateOne", function (next) {
-  const user = this;
-  bcrypt
-    .genSalt()
-    .then((salt) => {
-      bcrypt
-        .hash(user._update.password, salt)
-        .then((hashed) => {
-          user._update.password = hashed;
-          next();
-        })
-        .catch((err) => {
-          next(err);
-        });
-    })
-    .catch((err) => {
-      next(err);
-    });
-});
+  if (user.isModified("password")) {
+    bcrypt
+      .genSalt()
+      .then((salt) => {
+        bcrypt
+          .hash(user.password, salt)
+          .then((hashed) => {
+            user.password = hashed;
+            next();
+          })
+          .catch((err) => {
+            throw err;
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        next(err);
+      });
+  }
 
+  if (user.isModified("history")) {
+    user.history = user.history.slice(-10);
+    next();
+  }
+});
 userSchema.methods.comparePassword = function (plainPassword, next) {
   bcrypt
     .compare(plainPassword, this.password)

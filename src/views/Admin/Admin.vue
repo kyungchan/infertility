@@ -73,7 +73,13 @@
           <v-row>
             <v-col cols="12" class="py-0" align="end">
               <v-spacer></v-spacer>
-              <v-btn color="primary" tile depressed>
+              <v-btn
+                :disabled="!testData[selectedTestIndex].answers.length"
+                color="primary"
+                tile
+                depressed
+                @click="onCsvDownload"
+              >
                 <v-icon left>mdi-download</v-icon>전체 CSV
               </v-btn>
             </v-col>
@@ -86,12 +92,7 @@
               {{ $moment(item.createdAt).format("YYYY-MM-DD HH:mm:ss") }}
             </template>
             <template v-slot:[`item.pdf`]="{ item }">
-              <v-btn
-                color="primary"
-                icon
-                tile
-                depressed
-                @click="onPdfDownload(item.answer)"
+              <v-btn icon tile depressed @click="onPdfDownload(item)"
                 ><v-icon>mdi-download</v-icon></v-btn
               >
             </template>
@@ -197,7 +198,7 @@ export default {
       return [
         { text: "답변 시간", value: "createdAt" },
         { text: "점수", value: "score" },
-        { text: "PDF", value: "pdf" },
+        { text: "PDF", value: "pdf", sortable: false },
       ];
     },
     userId() {
@@ -205,6 +206,33 @@ export default {
     },
   },
   methods: {
+    onCsvDownload() {
+      this.$axios
+        .get(
+          `${apiPrefix}/tests/${this.testData[this.selectedTestIndex]._id}/csv`,
+          {
+            responseType: "blob",
+          }
+        )
+        .then((file) => {
+          const fileURL = window.URL.createObjectURL(
+            new Blob(["\ufeff", file.data])
+          );
+          const fileLink = document.createElement("a");
+
+          fileLink.href = fileURL;
+          fileLink.setAttribute(
+            "download",
+            `${this.testData[this.selectedTestIndex].title}.csv`
+          );
+          document.body.appendChild(fileLink);
+
+          fileLink.click();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     onPdfDownload(answer) {
       let options = {
         fontSize: 12,
@@ -224,8 +252,10 @@ export default {
         )
         .then((result) => {
           const surveyPDF = new SurveyPDF.SurveyPDF(result.data, options);
-          surveyPDF.data = answer;
-          surveyPDF.save("as");
+          surveyPDF.data = answer.answer;
+          surveyPDF.save(
+            this.$moment(answer.createdAt).format("YYMMDD-HHmmss")
+          );
         })
         .catch((err) => {
           console.log(err);
@@ -239,7 +269,7 @@ export default {
     onPassChange() {
       if (this.$refs.loginForm.validate()) {
         this.$axios
-          .patch(`${apiPrefix}/users`, {
+          .patch(`${apiPrefix}/users/password`, {
             userId: this.userId,
             password: this.password.confirm,
           })
