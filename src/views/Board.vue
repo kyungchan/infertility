@@ -114,16 +114,16 @@ export default {
         }`
       )
       .then((result) => {
+        this.$scrollTo.scrollTo(".topScroll", 800, {
+          offset: -80,
+          easing: [0.65, 0, 0.35, 1],
+        });
         this.posts = result.data.posts;
         this.posts.forEach((e) => {
           e.preview = sanitizeHtml(e.content, { allowedTags: [] });
         });
         this.total = result.data.count;
         this.page = to.query.page * 1 || 1;
-        this.$scrollTo.scrollTo(".topScroll", 800, {
-          offset: -80,
-          easing: [0.65, 0, 0.35, 1],
-        });
         next();
       })
       .catch(() => {

@@ -22,38 +22,73 @@ router.post("/", function (req, res) {
     });
 });
 
-router.get("/like", function (req, res) {
+router.get("/likes", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       const page = req.query.page || 1;
-      userModel
-        .findOne({ id: decoded.id }, { likes: 1 })
-        .then((result) => {
-          let sendJson;
-          if (page == 0) {
-            sendJson = {
+      if (page != 0)
+        userModel
+          .aggregate([
+            { $match: { id: decoded.id } },
+            {
+              $project: {
+                total: { $size: "$likes" },
+                likes: {
+                  $slice: [
+                    "$likes",
+                    -10 * (page - 1),
+                    {
+                      $cond: [
+                        { $gte: [{ $size: "$likes" }, page * 10] },
+                        10,
+                        { $subtract: [page * 10, { $size: "$likes" }] },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: "posts",
+                localField: "likes",
+                foreignField: "_id",
+                as: "likes",
+              },
+            },
+          ])
+          .then((result) => {
+            console.log(result);
+            res.status(200).json({
+              likes: result[0].likes,
+              total: result[0].total,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.sendStatus(200);
+          });
+      else
+        userModel
+          .findOne({ id: decoded.id }, { likes: 1 })
+          .then((result) => {
+            res.status(200).json({
               likes: result.likes,
-            };
-          } else {
-            sendJson = {
-              likes: result.likes.slice(-10 * page, -10 * (page - 1)).reverse(),
-              total: result.likes.length,
-            };
-          }
-          res.status(200).json(sendJson);
-        })
-        .catch((err) => {
-          console.log(err);
-          res.sendStatus(404);
-        });
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.sendStatus(200);
+          });
     })
-    .catch(() => {
-      res.sendStatus(401);
+    .catch((err) => {
+      console.log(err);
+      res.sendStatus(400);
     });
 });
 
-router.post("/like", function (req, res) {
+router.post("/likes", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
@@ -90,7 +125,8 @@ router.get("/history", function (req, res) {
           res.sendStatus(404);
         });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       res.sendStatus(401);
     });
 });

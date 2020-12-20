@@ -16,6 +16,7 @@ const TestList = () => import("..//views/TestList.vue");
 const Login = () => import("../views/Login");
 const Register = () => import("../views/Register");
 const History = () => import("../views/Feed/History");
+const Likes = () => import("../views/Feed/Like");
 
 const Admin = () => import("../views/Admin/Admin");
 
@@ -91,6 +92,10 @@ const routes = [
   {
     path: "/history",
     component: History,
+  },
+  {
+    path: "/likes",
+    component: Likes,
   },
   {
     path: "*",

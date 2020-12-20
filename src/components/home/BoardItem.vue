@@ -13,12 +13,7 @@
           {{ `${date}${view ? " | 조회 " + view : ""}` }}
         </div>
         <v-spacer></v-spacer>
-        <v-btn
-          class="mt-n2"
-          @click.prevent="onLike"
-          :color="like ? 'red' : ''"
-          icon
-        >
+        <v-btn @click.prevent="onLike" :color="like ? 'red' : ''" icon>
           <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
         </v-btn>
       </v-row>
@@ -32,7 +27,7 @@ export default {
   methods: {
     onLike() {
       this.$axios
-        .post(`${apiPrefix}/users/like`, {
+        .post(`${apiPrefix}/users/likes`, {
           set: !this.like,
           postId: this.id,
         })

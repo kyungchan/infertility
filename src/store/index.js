@@ -35,7 +35,7 @@ export default new Vuex.Store({
   actions: {
     getLikes(context) {
       axios
-        .get(`${apiPrefix}/users/like?page=0`)
+        .get(`${apiPrefix}/users/likes?page=0`)
         .then((result) => {
           context.commit("setLikes", result.data.likes);
         })

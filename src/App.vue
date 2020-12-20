@@ -77,7 +77,7 @@
               </v-list-item>
             </v-col>
             <v-col cols="4" class="pa-0 text-center">
-              <v-list-item link class="pt-3 d-block">
+              <v-list-item link to="/likes" class="pt-3 d-block">
                 <v-badge bordered right overlap color="secondary">
                   <span slot="badge">7</span>
                   <!--slot can be any component-->

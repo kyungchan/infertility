@@ -7,34 +7,63 @@
       :color="color"
       border="left"
       elevation="0"
-      class="py-0"
+      class="py-0 pr-0"
     >
       <div class="one-line text--secondary caption">{{ subtitle }}</div>
       <div class="one-line subtitle-2 font-weight-bold">{{ title }}</div>
       <div class="text--secondary caption">{{ date }}</div>
-      <div class="one-line text--secondary caption">{{ content }}</div>
+      <v-row class="mx-0">
+        <div class="one-line text--secondary caption">{{ content }}</div>
+        <v-spacer></v-spacer>
+        <v-btn
+          v-if="postId"
+          @click.prevent="onLike"
+          :color="like ? 'red' : ''"
+          icon
+        >
+          <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
+        </v-btn>
+      </v-row>
     </v-alert>
   </router-link>
 </template>
 
 <script>
+const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
+
 export default {
+  methods: {
+    onLike() {
+      this.$axios
+        .post(`${apiPrefix}/users/likes`, {
+          set: !this.like,
+          postId: this.postId,
+        })
+        .then(() => {
+          this.like = !this.like;
+          this.$store.dispatch("getLikes");
+        });
+    },
+  },
+  computed: {
+    getLike() {
+      return this.$store.state.likes;
+    },
+  },
+  mounted() {
+    if (this.postId) this.like = this.getLike.includes(this.postId);
+  },
   data: () => ({
-    boards: [
-      { code: "0", name: "난임 정보 마당" },
-      { code: "1", name: "난임과 신체 건강" },
-      { code: "2", name: "신체 건강 중재" },
-      { code: "3", name: "난임과 정서적 건강" },
-      { code: "4", name: "정서 건강 중재" },
-      { code: "5", name: "성 건강" },
-      { code: "6", name: "생활습관" },
-    ],
+    like: false,
   }),
-  props: ["color", "title", "date", "link", "content", "subtitle"],
+  props: ["color", "title", "date", "link", "content", "subtitle", "postId"],
 };
 </script>
 
 <style scoped>
+.v-btn:before {
+  background-color: initial;
+}
 .one-line {
   overflow: hidden;
   text-overflow: ellipsis;
