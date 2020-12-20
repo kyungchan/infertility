@@ -5,6 +5,21 @@
       <v-toolbar-title @click="$router.push('/')">Infertility</v-toolbar-title>
 
       <v-spacer></v-spacer>
+      <v-fade-transition>
+        <v-text-field
+          outlined
+          dense
+          hide-details=""
+          placeholder="검색"
+          append-icon="mdi-magnify"
+          @click:append="onSearch('top')"
+          @keydown.enter="onSearch('top')"
+          v-model="topSearch"
+          filled
+          v-show="this.$vuetify.breakpoint.smAndUp"
+          style="max-width: 220px"
+        ></v-text-field>
+      </v-fade-transition>
       <v-btn v-if="!userRule" to="/login" color="primary" elevation="0">
         <v-icon left>mdi-login</v-icon>Login
       </v-btn>
@@ -52,6 +67,19 @@
 
     <v-navigation-drawer v-model="drawer" app temporary width="280">
       <v-list nav dense>
+        <v-list-item>
+          <v-text-field
+            outlined
+            dense
+            rounded
+            hide-details=""
+            placeholder="검색"
+            append-icon="mdi-magnify"
+            @click:append="onSearch('appbar')"
+            @keydown.enter="onSearch('appbar')"
+            v-model="appBarSearch"
+          ></v-text-field>
+        </v-list-item>
         <v-list-item v-if="this.userRule">
           <v-row class="caption">
             <v-col cols="4" class="pa-0 text-center">
@@ -81,7 +109,8 @@
             </v-col>
           </v-row>
         </v-list-item>
-        <v-divider class="mb-2" v-if="this.userRule"></v-divider>
+
+        <v-divider class="my-2"></v-divider>
         <v-list-item link to="/" color="primary">
           <v-list-item-icon>
             <v-icon>mdi-home</v-icon>
@@ -200,8 +229,17 @@ export default {
 
   data: () => ({
     drawer: false,
+    appBarSearch: "",
+    topSearch: "",
   }),
   methods: {
+    onSearch(position) {
+      // 상태바인지 앱바안 검색창인지
+      let query = position == "top" ? this.topSearch : this.appBarSearch;
+      this.appBarSearch = "";
+      this.topSearch = "";
+      this.$router.replace(`./search?query=${query}`);
+    },
     onSignOut() {
       this.$store.commit("signOut");
       this.$router.replace("/");
