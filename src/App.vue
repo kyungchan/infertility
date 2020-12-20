@@ -79,7 +79,7 @@
             <v-col cols="4" class="pa-0 text-center">
               <v-list-item link to="/likes" class="pt-3 d-block">
                 <v-badge bordered right overlap color="secondary">
-                  <span slot="badge">7</span>
+                  <span slot="badge">{{ this.likes.length }}</span>
                   <!--slot can be any component-->
                   <v-icon size="30" color="">mdi-heart</v-icon>
                 </v-badge>
@@ -220,6 +220,9 @@ export default {
     },
     userName() {
       return this.$store.state.name;
+    },
+    likes() {
+      return this.$store.state.likes;
     },
   },
 };
