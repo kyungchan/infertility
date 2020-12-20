@@ -44,7 +44,7 @@
             <span style="vertical-align: middle">{{ post.view }}</span>
             <v-spacer></v-spacer>
             <v-btn
-              class="mt-n2"
+              v-if="userRule"
               @click.prevent="onLike"
               :color="like ? 'red' : ''"
               icon
@@ -148,7 +148,7 @@ export default {
       this.$axios
         .post(`${apiPrefix}/users/likes`, {
           set: !this.like,
-          postId: this.id,
+          postId: this.$route.params.postId,
         })
         .then(() => {
           this.like = !this.like;
@@ -177,8 +177,8 @@ export default {
     },
   },
   mounted() {
-    this.like = this.getLike.includes(this.id);
     if (this.userRule) {
+      this.like = this.getLike.includes(this.$route.params.postId);
       this.$axios
         .patch(`${apiPrefix}/users/history`, {
           post: this.$route.params.postId,

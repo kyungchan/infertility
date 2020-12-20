@@ -20,7 +20,13 @@
           style="max-width: 220px"
         ></v-text-field>
       </v-fade-transition>
-      <v-btn v-if="!userRule" to="/login" color="primary" elevation="0">
+      <v-btn
+        v-if="!userRule"
+        to="/login"
+        class="ml-2"
+        color="primary"
+        elevation="0"
+      >
         <v-icon left>mdi-login</v-icon>Login
       </v-btn>
       <v-menu offset-y v-if="userRule == 'admin'">

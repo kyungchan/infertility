@@ -13,7 +13,12 @@
           {{ `${date}${view ? " | 조회 " + view : ""}` }}
         </div>
         <v-spacer></v-spacer>
-        <v-btn @click.prevent="onLike" :color="like ? 'red' : ''" icon>
+        <v-btn
+          v-if="userRule"
+          @click.prevent="onLike"
+          :color="like ? 'red' : ''"
+          icon
+        >
           <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
         </v-btn>
       </v-row>
@@ -41,9 +46,12 @@ export default {
     like: false,
   }),
   mounted() {
-    this.like = this.getLike.includes(this.id);
+    if (this.userRule) this.like = this.getLike.includes(this.id);
   },
   computed: {
+    userRule() {
+      return this.$store.state.rule;
+    },
     getLike() {
       return this.$store.state.likes;
     },
