@@ -238,7 +238,7 @@ export default {
       let query = position == "top" ? this.topSearch : this.appBarSearch;
       this.appBarSearch = "";
       this.topSearch = "";
-      this.$router.replace(`./search?query=${query}`);
+      this.$router.push(`./search?query=${query}`);
     },
     onSignOut() {
       this.$store.commit("signOut");

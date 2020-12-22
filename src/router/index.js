@@ -18,6 +18,7 @@ const Register = () => import("../views/Register");
 const History = () => import("../views/Feed/History");
 const Likes = () => import("../views/Feed/Like");
 const Mypage = () => import("../views/Mypage");
+const Search = () => import("../views/Search");
 const Admin = () => import("../views/Admin/Admin");
 
 import ErrorPage from "..//views/Error.vue";
@@ -104,6 +105,10 @@ const routes = [
     path: "/likes",
     component: Likes,
     meta: { loginRequired: true },
+  },
+  {
+    path: "/search",
+    component: Search,
   },
   {
     path: "*",

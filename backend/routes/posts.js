@@ -21,42 +21,79 @@ router.get("/", function (req, res) {
     .catch((err) => {
       console.log(tag, err);
     });
-  // 속도 비교용 sample 6번 vs map reduce
-  // let results = [];
-  // await (async () => {
-  //   for (let i = 1; i <= 6; i++) {
-  //     let result = await boardModel.aggregate([
-  //       { $match: { boardCode: i } },
-  //       { $sample: { size: 1 } },
-  //     ]);
-  //     results.push(result[0]);
-  //   }
-  // })();
-  // console.log(results);
-  // res.json(results);
+});
+router.get("/search", function (req, res) {
+  const page = req.query.page || 1;
+  const searchQuery = req.query.query;
+  if (!searchQuery) res.sendStatus(404);
+  boardModel
+    .aggregate([
+      {
+        $match: {
+          $text: { $search: searchQuery },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          result: { $push: "$$ROOT" },
+          count: { $sum: 1 },
+        },
+      },
+      { $unwind: "$result" },
+      { $skip: 10 * (page - 1) },
+      { $limit: 10 },
+    ])
+    .then((result) => {
+      const posts = [];
+      result.forEach((e) => {
+        posts.push(e.result);
+      });
+      res
+        .status(200)
+        .json({ posts: posts, count: result.length ? result[0].count : 0 });
+    })
+    .catch((err) => {
+      console.log(tag, err);
+      res.sendStatus(400);
+    });
 });
 
 router.get("/:boardCode", function (req, res) {
   const page = req.query.page || 1;
-  const findOption = { boardCode: req.params.boardCode };
-  if (req.query.search) findOption["$text"] = { $search: req.query.search };
-
+  const aggregateOptions = [
+    {
+      $match: {
+        $text: { $search: req.query.search },
+      },
+    },
+    {
+      $match: {
+        boardCode: req.params.boardCode * 1,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        result: { $push: "$$ROOT" },
+        count: { $sum: 1 },
+      },
+    },
+    { $unwind: "$result" },
+    { $skip: 10 * (page - 1) },
+    { $limit: 10 },
+  ];
+  if (!req.query.search) aggregateOptions.shift();
   boardModel
-    .find(findOption)
-    .countDocuments()
-    .then((count) => {
-      boardModel
-        .find(findOption)
-        .sort({ _id: -1 })
-        .skip(10 * (page - 1))
-        .limit(10)
-        .then((result) => {
-          res.status(200).json({ posts: result, count: count });
-        })
-        .catch((err) => {
-          console.log(tag, err);
-          res.sendStatus(404);
-        });
+    .aggregate(aggregateOptions)
+    .then((result) => {
+      const posts = [];
+      result.forEach((e) => {
+        posts.push(e.result);
+      });
+      res
+        .status(200)
+        .json({ posts: posts, count: result.length ? result[0].count : 0 });
     })
     .catch((err) => {
       console.log(tag, err);
