@@ -1,20 +1,5 @@
 <template>
   <div class="topScroll">
-    <v-fab-transition>
-      <v-btn
-        v-if="userRule == 'admin'"
-        transition="scale-transition"
-        :to="`${board.code}/editor`"
-        color="pink"
-        fixed
-        dark
-        bottom
-        right
-        fab
-      >
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-    </v-fab-transition>
     <v-parallax height="250" fluid dark src="@/assets/banner_flower.jpg">
       <v-row align="center" justify="center">
         <v-col class="text-center" cols="12">
@@ -34,16 +19,17 @@
 
         <li v-for="post in posts" :key="post._id">
           <router-link
-            :to="`./${post.boardCode}/${post._id}`"
+            :to="`/boards/${post.boardCode}/${post._id}`"
             class="text-decoration-none"
           >
             <v-slide-y-reverse-transition appear hide-on-leave duration="1000">
               <board-item
                 :id="post._id"
-                :title="post.title"
+                :title="post._id"
                 :preview="post.preview"
                 :date="$moment(post.createdAt).format('YYYY-MM-DD HH:mm:ss')"
                 :view="post.view"
+                :likebtn="userRule"
                 color="indigo"
               ></board-item>
             </v-slide-y-reverse-transition>

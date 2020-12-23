@@ -55,10 +55,11 @@
             <v-slide-y-reverse-transition appear hide-on-leave duration="1000">
               <board-item
                 :id="post._id"
-                :title="post.title"
+                :title="post._id"
                 :preview="post.preview"
                 :date="$moment(post.createdAt).format('YYYY-MM-DD HH:mm:ss')"
                 :view="post.view"
+                :likebtn="userRule"
                 color="indigo"
               ></board-item>
             </v-slide-y-reverse-transition>
@@ -156,7 +157,9 @@ export default {
   methods: {
     onPageChange(page) {
       this.$router.push(
-        `${this.$route.path}?search=${this.search}&page=${page}`
+        `${this.$route.path}?${
+          this.search ? `search=${this.search}&` : ""
+        }page=${page}`
       );
     },
     onSearch() {

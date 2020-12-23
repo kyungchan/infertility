@@ -13,7 +13,12 @@
           {{ `${date}${view ? " | 조회 " + view : ""}` }}
         </div>
         <v-spacer></v-spacer>
-        <v-btn @click.prevent="onLike" :color="like ? 'red' : ''" icon>
+        <v-btn
+          v-if="likebtn"
+          @click.prevent="onLike"
+          :color="like ? 'red' : ''"
+          icon
+        >
           <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
         </v-btn>
       </v-row>
@@ -48,7 +53,7 @@ export default {
       return this.$store.state.likes;
     },
   },
-  props: ["preview", "color", "title", "date", "link", "view", "id"],
+  props: ["preview", "color", "title", "date", "link", "view", "id", "likebtn"],
 };
 </script>
 

@@ -73,6 +73,9 @@ router.get("/:boardCode", function (req, res) {
       },
     },
     {
+      $sort: { _id: -1 },
+    },
+    {
       $group: {
         _id: null,
         result: { $push: "$$ROOT" },

@@ -18,6 +18,7 @@
             <board-item
               :title="survey.title"
               :preview="survey.description"
+              :likebtn="false"
               color="indigo"
             ></board-item>
           </router-link>
