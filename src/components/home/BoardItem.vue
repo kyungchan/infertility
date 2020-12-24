@@ -14,7 +14,7 @@
         </div>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="userRule"
+          v-if="likebtn"
           @click.prevent="onLike"
           :color="like ? 'red' : ''"
           icon
@@ -56,7 +56,7 @@ export default {
       return this.$store.state.likes;
     },
   },
-  props: ["preview", "color", "title", "date", "link", "view", "id"],
+  props: ["preview", "color", "title", "date", "link", "view", "id", "likebtn"],
 };
 </script>
 

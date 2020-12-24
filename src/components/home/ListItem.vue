@@ -61,6 +61,9 @@ export default {
 </script>
 
 <style scoped>
+.v-alert__content {
+  width: 100%;
+}
 .v-btn:before {
   background-color: initial;
 }

@@ -1,55 +1,25 @@
 <template>
   <div class="topScroll">
-    <v-fab-transition>
-      <v-btn
-        v-if="userRule == 'admin'"
-        transition="scale-transition"
-        :to="`${board.code}/editor`"
-        color="pink"
-        fixed
-        dark
-        bottom
-        right
-        fab
-      >
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-    </v-fab-transition>
     <v-parallax height="250" fluid dark src="@/assets/banner_flower.jpg">
       <v-row align="center" justify="center">
         <v-col class="text-center" cols="12">
           <h1
             class="quad-text-shadow text-center display-1 font-weight-thin mb-4"
           >
-            <transition name="fade" mode="out-in">
-              <span :key="board.name">{{ board.name }}</span>
-            </transition>
+            검색: {{ $route.query.query }}
           </h1>
         </v-col>
       </v-row>
     </v-parallax>
     <v-container>
-      <v-row>
-        <v-spacer></v-spacer>
-        <v-col cols="7" sm="5" md="4" lg="3" class="d-flex py-0">
-          <v-text-field
-            placeholder="검색"
-            hide-details
-            dense
-            v-model="search"
-            @keydown.enter="onSearch"
-          ></v-text-field>
-          <v-btn icon @click="onSearch"><v-icon>mdi-magnify</v-icon></v-btn>
-        </v-col>
-      </v-row>
       <ul class="pa-0 ma-0">
         <div v-if="!posts.length" class="py-10 text-center">
-          작성된 글이 없습니다.
+          검색된 글이 없습니다.
         </div>
 
         <li v-for="post in posts" :key="post._id">
           <router-link
-            :to="`./${post.boardCode}/${post._id}`"
+            :to="`/boards/${post.boardCode}/${post._id}`"
             class="text-decoration-none"
           >
             <v-slide-y-reverse-transition appear hide-on-leave duration="1000">
@@ -91,15 +61,10 @@ export default {
     page: 1,
     total: 0,
     posts: [],
-    search: "",
+    query: "",
   }),
-  created() {
-    if (this.$route.params.id > 6 || this.$route.params.id < 1) {
-      this.$router.replace("/error");
-    }
-  },
   mounted() {
-    this.search = this.$route.query.search;
+    this.query = this.$route.query.query;
     setTimeout(() => {
       this.$scrollTo.scrollTo(".topScroll", 800, {
         offset: -80,
@@ -108,10 +73,11 @@ export default {
     }, 50);
   },
   beforeRouteUpdate(to, from, next) {
+    this.query = this.$route.query.query;
     axios
       .get(
-        `${apiPrefix}/posts/${to.params.id}?page=${to.query.page || 1}${
-          to.query.search ? "&search=" + to.query.search : ""
+        `${apiPrefix}/posts/search?query=${to.query.query}&page=${
+          to.query.page || 1
         }`
       )
       .then((result) => {
@@ -132,14 +98,17 @@ export default {
       });
   },
   beforeRouteEnter(to, from, next) {
+    console.log(to);
     axios
       .get(
-        `${apiPrefix}/posts/${to.params.id}?page=${to.query.page || 1}${
-          to.query.search ? "&search=" + to.query.search : ""
+        `${apiPrefix}/posts/search?query=${to.query.query}&page=${
+          to.query.page || 1
         }`
       )
       .then((result) => {
+        console.log(result);
         next((vm) => {
+          vm.query = vm.$route.query.query;
           vm.posts = result.data.posts;
           vm.posts.forEach((e) => {
             e.preview = sanitizeHtml(e.content, { allowedTags: [] });
@@ -156,14 +125,8 @@ export default {
   },
   methods: {
     onPageChange(page) {
-      this.$router.push(
-        `${this.$route.path}?${
-          this.search ? `search=${this.search}&` : ""
-        }page=${page}`
-      );
-    },
-    onSearch() {
-      this.$router.push(`${this.$route.path}?search=${this.search}&page=1`);
+      console.log(this.qury);
+      this.$router.push(`${this.$route.path}?query=${this.query}&page=${page}`);
     },
   },
   computed: {
