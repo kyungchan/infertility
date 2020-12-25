@@ -55,7 +55,7 @@
             <v-slide-y-reverse-transition appear hide-on-leave duration="1000">
               <board-item
                 :id="post._id"
-                :title="post._id"
+                :title="post.title"
                 :preview="post.preview"
                 :date="$moment(post.createdAt).format('YYYY-MM-DD HH:mm:ss')"
                 :view="post.view"
