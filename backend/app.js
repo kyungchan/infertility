@@ -8,6 +8,7 @@ const postsRouter = require("./routes/posts");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/users");
 const testRouter = require("./routes/tests");
+const imageRouter = require("./routes/images");
 const indexRouter = require("./routes/index");
 
 const dbconnect = require("./modules/dbconnect");
@@ -28,6 +29,8 @@ app.use("/posts", postsRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/tests", testRouter);
+app.use("/images", imageRouter);
+app.use("/images", express.static("uploads/board/image"));
 app.use("/", indexRouter);
 
 module.exports = app;

@@ -263,6 +263,7 @@ import {
   Underline,
   History,
   Placeholder,
+  Image,
 } from "tiptap-extensions";
 
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
@@ -304,6 +305,7 @@ export default {
           new OrderedList(),
           new TodoItem(),
           new TodoList(),
+          new Image(),
           new Link({ rel: "", target: "_blank" }),
           new Bold(),
           new Code(),
@@ -342,10 +344,25 @@ export default {
   },
   methods: {
     showImagePrompt(command) {
-      const src = prompt("Enter the url of your image here");
-      if (src !== null) {
-        command({ src });
-      }
+      console.log(command);
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.click();
+      input.onchange = (event) => {
+        const formData = new FormData();
+        formData.append("image", event.target.files[0]);
+        this.$axios
+          .post(`${apiPrefix}/images`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          .then((result) => {
+            command({ src: `${apiPrefix}/images/${result.data}` });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
     },
     onPublish() {
       if (!this.title.length) {
