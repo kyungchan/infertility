@@ -83,7 +83,7 @@
 
       <v-col cols="12" class="py-0">
         <v-divider class="my-4"></v-divider>
-        <editor-content :editor="editor" />
+        <editor-content :editor="editor" id="editor" />
       </v-col>
     </v-row>
   </v-container>
@@ -100,6 +100,7 @@ import {
   OrderedList,
   BulletList,
   ListItem,
+  Image,
   TodoItem,
   TodoList,
   Bold,
@@ -205,6 +206,7 @@ export default {
           showOnlyWhenEditable: true,
           showOnlyCurrent: true,
         }),
+        new Image(),
         new Blockquote(),
         new BulletList(),
         new CodeBlock(),
@@ -233,6 +235,7 @@ export default {
 };
 </script>
 
+<style lang="scss" src="@/assets/sass/main.scss"></style>
 <style>
 #title {
   word-break: keep-all;
@@ -242,5 +245,62 @@ export default {
 <style scoped>
 .hide-btn-afterimage:before {
   background-color: initial;
+}
+</style>
+
+<style lang="scss">
+#editor img {
+  max-width: 100%;
+}
+.editor p.is-editor-empty:first-child::before {
+  content: attr(data-empty-text);
+  float: left;
+  color: #aaa;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+</style>
+
+<style lang="scss" scoped>
+.icon {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin: 0 0.3rem;
+  top: -0.05rem;
+  fill: currentColor;
+  // &.has-align-fix {
+  // 	top: -.1rem;
+  // }
+  &__svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    height: 100%;
+  }
+  &:first-child {
+    margin-left: 0;
+  }
+  &:last-child {
+    margin-right: 0;
+  }
+}
+// svg sprite
+body > svg,
+.icon use > svg,
+symbol {
+  path,
+  rect,
+  circle,
+  g {
+    fill: currentColor;
+    stroke: none;
+  }
+  *[d="M0 0h24v24H0z"] {
+    display: none;
+  }
 }
 </style>

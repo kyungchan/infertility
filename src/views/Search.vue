@@ -98,7 +98,6 @@ export default {
       });
   },
   beforeRouteEnter(to, from, next) {
-    console.log(to);
     axios
       .get(
         `${apiPrefix}/posts/search?query=${to.query.query}&page=${
@@ -106,7 +105,6 @@ export default {
         }`
       )
       .then((result) => {
-        console.log(result);
         next((vm) => {
           vm.query = vm.$route.query.query;
           vm.posts = result.data.posts;

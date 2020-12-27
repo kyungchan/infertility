@@ -5,6 +5,25 @@ const auth = require("../modules/authorization.js");
 const userModel = require("../odm/user");
 
 const tag = "[users.js]";
+router.get("/", function (req, res) {
+  auth.decodeToken(req.cookies.token).then((token) => {
+    if (token.rule == "admin") {
+      // admin 만
+      userModel
+        .find({}, { id: 1, name: 1, rule: 1, createdAt: 1 })
+        .sort({ _id: -1 })
+        .then((users) => {
+          res.status(200).json(users);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.sendStatus(404);
+        });
+    } else {
+      res.sendStatus(401);
+    }
+  });
+});
 
 router.post("/", function (req, res) {
   userModel
@@ -167,23 +186,30 @@ router.patch("/password", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
-      userModel
-        .findOne({ id: decoded.id })
-        .then((user) => {
-          user.password = req.body.password;
-          user
-            .save()
-            .then(() => {
-              res.sendStatus(200);
-            })
-            .catch((err) => {
-              throw err;
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.sendStatus(404);
-        });
+      // 요청한 사용자의 토큰과 변경하려는 ID가 같거나 ADMIN일 경우
+      if (decoded.id == req.body.userId || decoded.rule == "admin") {
+        console.log(req.body);
+        userModel
+          .findOne({ id: req.body.userId || decoded.id })
+          .then((user) => {
+            user.password = req.body.password;
+            user
+              .save()
+              .then(() => {
+                res.sendStatus(200);
+              })
+              .catch((err) => {
+                console.log(err);
+                throw err;
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.sendStatus(404);
+          });
+      } else {
+        res.sendStatus(401);
+      }
     })
     .catch((err) => {
       console.log(err);

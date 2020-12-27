@@ -100,6 +100,25 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="passResetDialog" max-width="550px">
+      <v-card>
+        <v-card-title> 비밀번호 초기화 </v-card-title>
+        <v-card-text>
+          사용자 {{ selectedUser.id }}의 비밀번호를 123456789로 초기화합니다.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" tile depressed @click="onPassReset"
+            >확인</v-btn
+          >
+          <v-btn color="primary" tile outlined @click="passResetDialog = false"
+            >취소</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-expansion-panels v-model="panel">
       <v-expansion-panel>
         <v-expansion-panel-header>
@@ -125,12 +144,48 @@
 
       <v-expansion-panel>
         <v-expansion-panel-header>
+          <div><v-icon left>mdi-format-list-text</v-icon>회원 관리</div>
+        </v-expansion-panel-header>
+
+        <v-expansion-panel-content>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-col class="pa-0 pr-3" md="3" sm="4" cols="12">
+              <v-text-field
+                prepend-inner-icon="mdi-magnify"
+                label="ID 검색"
+                v-model="idSearch"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-data-table
+            :headers="usersHeaders"
+            :items="userData"
+            :search="idSearch"
+          >
+            <template v-slot:[`item.createdAt`]="{ item }">
+              {{ $moment(item.createdAt).format("YYYY-MM-DD HH:mm:ss") }}
+            </template>
+            <template v-slot:[`item.password`]="{ item }">
+              <v-btn
+                color="primary"
+                tile
+                depressed
+                @click="onPassResetClick(item)"
+                >초기화</v-btn
+              >
+            </template>
+          </v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
           <div>
             <v-icon left>mdi-format-list-text</v-icon>심리검사 결과 조회
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-data-table disable-sort :headers="headers" :items="testData">
+          <v-data-table disable-sort :headers="testHeaders" :items="testData">
             <template v-slot:[`item.answers`]="{ item }">
               {{ Object.keys(item.answers).length }}
             </template>
@@ -159,35 +214,43 @@ import font from "../../assets/survey/pdfFont.txt";
 const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // production mode를 구분
 export default {
   data: () => ({
+    idSearch: "",
     panel: 0,
-    passwordDialog: false,
+    passwordDialog: false, // 비밀번호 변경
+    passResetDialog: false, // 비밀번호 초기화
     dialog: false,
     dialogTitle: "",
     dialogContent: "",
     testData: {},
+    userData: {},
     selectedTestIndex: 0,
+    selectedUser: {},
     testResultDialog: false,
     password: { password: "", confirm: "" },
   }),
-  beforeRouteEnter(to, from, next) {
-    axios
-      .get(`${apiPrefix}/tests`)
-      .then((result) => {
-        next((vm) => {
-          vm.testData = result.data;
-          vm.testData.forEach((e, i) => {
-            e.index = i;
-          });
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const tests = await axios.get(`${apiPrefix}/tests`);
+      const users = await axios.get(`${apiPrefix}/users`);
+      next((vm) => {
+        // index붙여주기
+        vm.testData = tests.data;
+        vm.testData.forEach((e, i) => {
+          e.index = i;
         });
-      })
-      .catch(() => {
-        next((vm) => {
-          vm.$router.replace("/error");
+        vm.userData = users.data;
+        vm.userData.forEach((e, i) => {
+          e.index = i;
         });
       });
+    } catch (error) {
+      next((vm) => {
+        vm.$router.replace("/error");
+      });
+    }
   },
   computed: {
-    headers() {
+    testHeaders() {
       return [
         { text: "검사 이름", value: "title" },
         { text: "답변 수", value: "answers" },
@@ -201,11 +264,45 @@ export default {
         { text: "PDF", value: "pdf", sortable: false },
       ];
     },
+    usersHeaders() {
+      return [
+        { text: "가입일", value: "createdAt" },
+        { text: "ID", value: "id" },
+        { text: "이름", value: "name" },
+        { text: "권한", value: "rule" },
+        { text: "비밀번호", value: "password", sortable: false },
+      ];
+    },
     userId() {
       return this.$store.state.userId;
     },
   },
   methods: {
+    onPassResetClick(user) {
+      this.passResetDialog = true;
+      this.selectedUser = user;
+    },
+    onPassReset() {
+      this.$axios
+        .patch(`${apiPrefix}/users/password`, {
+          userId: this.selectedUser.id,
+          password: "123456789",
+        })
+        .then(() => {
+          this.dialog = true;
+          this.dialogTitle = "알림";
+          this.dialogContent = "비밀번호 초기화가 완료되었습니다.";
+        })
+        .catch(() => {
+          this.dialog = true;
+          this.dialogTitle = "오류";
+          this.dialogContent = "비밀번호 초기화에 실패했습니다.";
+        })
+        .finally(() => {
+          this.passResetDialog = false;
+          this.selectedUser = {};
+        });
+    },
     onCsvDownload() {
       this.$axios
         .get(

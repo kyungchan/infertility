@@ -68,7 +68,21 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row>
-            <v-col cols="12" class="py-0">
+            <v-col cols="12" class="py-2">
+              <v-row class="px-3">
+                ID
+                <v-spacer></v-spacer>
+                {{ userId }}
+              </v-row>
+            </v-col>
+            <v-col cols="12" class="py-2">
+              <v-row class="px-3">
+                이름
+                <v-spacer></v-spacer>
+                {{ userName }}
+              </v-row>
+            </v-col>
+            <v-col cols="12" class="py-2">
               <v-row class="px-3">
                 비밀번호 변경 <v-spacer></v-spacer
                 ><v-btn
@@ -100,7 +114,10 @@ export default {
   }),
   computed: {
     userId() {
-      return this.$store.state.userId;
+      return this.$store.state.id;
+    },
+    userName() {
+      return this.$store.state.name;
     },
   },
   methods: {
