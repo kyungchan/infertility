@@ -33,6 +33,7 @@ router.get("/search", function (req, res) {
           $text: { $search: searchQuery },
         },
       },
+      { $sort: { _id: -1 } },
       {
         $group: {
           _id: null,

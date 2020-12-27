@@ -12,12 +12,13 @@
           hide-details=""
           placeholder="검색"
           append-icon="mdi-magnify"
-          @click:append="onSearch('top')"
-          @keydown.enter="onSearch('top')"
+          @click:append="onAllSearch('top')"
+          @keydown.enter="onAllSearch('top')"
           v-model="topSearch"
           filled
           v-show="this.$vuetify.breakpoint.smAndUp"
           style="max-width: 220px"
+          class="mr-2"
         ></v-text-field>
       </v-fade-transition>
       <v-btn v-if="!userRule" to="/login" color="primary" elevation="0">
@@ -75,8 +76,8 @@
             hide-details=""
             placeholder="검색"
             append-icon="mdi-magnify"
-            @click:append="onSearch('appbar')"
-            @keydown.enter="onSearch('appbar')"
+            @click:append="onAllSearch('appbar')"
+            @keydown.enter="onAllSearch('appbar')"
             v-model="appBarSearch"
           ></v-text-field>
         </v-list-item>
@@ -233,12 +234,12 @@ export default {
     topSearch: "",
   }),
   methods: {
-    onSearch(position) {
+    onAllSearch(position) {
       // 상태바인지 앱바안 검색창인지
       let query = position == "top" ? this.topSearch : this.appBarSearch;
+      this.$router.push(`/search?query=${query}`);
       this.appBarSearch = "";
       this.topSearch = "";
-      this.$router.push(`./search?query=${query}`);
     },
     onSignOut() {
       this.$store.commit("signOut");
