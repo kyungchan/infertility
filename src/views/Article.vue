@@ -235,23 +235,24 @@ export default {
 };
 </script>
 
-<style lang="scss" src="@/assets/sass/main.scss"></style>
-<style>
+<style lang="scss">
+#editor {
+  @import "@/assets/sass/main.scss";
+}
+#editor img {
+  max-width: 100%;
+}
 #title {
   word-break: keep-all;
 }
 </style>
-
 <style scoped>
 .hide-btn-afterimage:before {
   background-color: initial;
 }
 </style>
 
-<style lang="scss">
-#editor img {
-  max-width: 100%;
-}
+<style lang="scss" scoped>
 .editor p.is-editor-empty:first-child::before {
   content: attr(data-empty-text);
   float: left;
@@ -260,9 +261,7 @@ export default {
   height: 0;
   font-style: italic;
 }
-</style>
 
-<style lang="scss" scoped>
 .icon {
   position: relative;
   display: inline-block;

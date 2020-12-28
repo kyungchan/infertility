@@ -438,8 +438,11 @@ export default {
   font-style: italic;
 }
 </style>
-<style lang="scss" src="@/assets/sass/main.scss"></style>
-
+<style lang="scss">
+.editor {
+  @import "@/assets/sass/main.scss";
+}
+</style>
 <style lang="scss" scoped>
 .icon {
   position: relative;
