@@ -82,8 +82,10 @@
       </v-col>
 
       <v-col cols="12" class="py-0">
-        <v-divider class="my-4"></v-divider>
-        <editor-content :editor="editor" id="editor" />
+        <div class="editor ma-2 pb-5">
+          <v-divider class="my-4"></v-divider>
+          <editor-content class="editor__content px-3" :editor="editor" />
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -206,7 +208,6 @@ export default {
           showOnlyWhenEditable: true,
           showOnlyCurrent: true,
         }),
-        new Image(),
         new Blockquote(),
         new BulletList(),
         new CodeBlock(),
@@ -217,7 +218,8 @@ export default {
         new OrderedList(),
         new TodoItem(),
         new TodoList(),
-        new Link({ rel: "noopener noreferrer nofollow", target: "_blank" }),
+        new Image(),
+        new Link({ rel: "", target: "_blank" }),
         new Bold(),
         new Code(),
         new Italic(),
@@ -236,23 +238,11 @@ export default {
 </script>
 
 <style lang="scss">
-#editor {
+.editor {
   @import "@/assets/sass/main.scss";
 }
-#editor img {
-  max-width: 100%;
-}
-#title {
-  word-break: keep-all;
-}
 </style>
-<style scoped>
-.hide-btn-afterimage:before {
-  background-color: initial;
-}
-</style>
-
-<style lang="scss" scoped>
+<style lang="scss">
 .editor p.is-editor-empty:first-child::before {
   content: attr(data-empty-text);
   float: left;
@@ -261,7 +251,8 @@ export default {
   height: 0;
   font-style: italic;
 }
-
+</style>
+<style lang="scss" scoped>
 .icon {
   position: relative;
   display: inline-block;
