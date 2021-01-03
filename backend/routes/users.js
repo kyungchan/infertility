@@ -50,23 +50,29 @@ router.get("/likes", function (req, res) {
         userModel
           .aggregate([
             { $match: { id: decoded.id } },
+            { $limit: 1 },
             {
               $project: {
                 total: { $size: "$likes" },
                 likes: {
                   $slice: [
                     "$likes",
-                    -10 * (page - 1),
+                    -10 * page,
                     {
                       $cond: [
                         { $gte: [{ $size: "$likes" }, page * 10] },
                         10,
-                        { $subtract: [page * 10, { $size: "$likes" }] },
+                        {
+                          $subtract: [{ $size: "$likes" }, (page - 1) * 10],
+                        },
                       ],
                     },
                   ],
                 },
               },
+            },
+            {
+              $unwind: { path: "$likes", includeArrayIndex: "row" }, // lookup stage에서 망가지는 순서를 지키기위해
             },
             {
               $lookup: {
@@ -78,14 +84,24 @@ router.get("/likes", function (req, res) {
             },
           ])
           .then((result) => {
-            console.log(result);
+            let resultLikes = [];
+            result.forEach((e) => {
+              resultLikes.push(e.likes[0]);
+            });
+            console.log(resultLikes);
             res.status(200).json({
-              likes: result[0].likes,
+              likes: resultLikes,
               total: result[0].total,
             });
           })
           .catch((err) => {
             console.log(err);
+            // 좋아요가 0개일때
+            if (err.code == 28729)
+              return res.status(200).json({
+                likes: [],
+                total: 0,
+              });
             res.sendStatus(200);
           });
       else
@@ -133,10 +149,19 @@ router.get("/history", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
+      const page = 2;
       userModel
-        .findOne({ id: decoded.id })
+        .findOne(
+          { id: decoded.id },
+          {
+            history: {
+              $slice: [-10 * page, 10],
+            },
+          }
+        )
         .populate("history")
         .then((result) => {
+          console.log(result);
           res.status(200).json({ posts: result.history });
         })
         .catch((err) => {
@@ -155,21 +180,12 @@ router.patch("/history", function (req, res) {
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       userModel
-        .findOne({ id: decoded.id })
-        .then((result) => {
-          if (!result.history.includes(req.body.post)) {
-            result.history.push(req.body.post);
-            result
-              .save()
-              .then(() => {
-                res.sendStatus(201);
-              })
-              .catch((err) => {
-                throw err;
-              });
-          } else {
-            res.sendStatus(201);
-          }
+        .updateOne(
+          { id: decoded.id },
+          { $addToSet: { history: req.body.post } }
+        )
+        .then(() => {
+          res.sendStatus(201);
         })
         .catch((err) => {
           console.log(tag, err);

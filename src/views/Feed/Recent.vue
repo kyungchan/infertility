@@ -6,7 +6,7 @@
           <h1
             class="quad-text-shadow text-center display-1 font-weight-thin mb-4"
           >
-            읽은 게시글
+            최근 작성된 게시글
           </h1>
         </v-col>
       </v-row>
@@ -16,7 +16,7 @@
         <v-card-text>
           <ul class="pa-0 ma-0">
             <div v-if="!posts.length" class="py-10 text-center">
-              읽은 글이 없습니다.
+              최근 작성된 글이 없습니다.
             </div>
 
             <li v-for="post in posts" :key="post._id">
@@ -73,9 +73,9 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     axios
-      .get(`${apiPrefix}/users/history`)
+      .get(`${apiPrefix}/posts/recent`)
       .then((result) => {
-        this.posts = result.data.posts.reverse();
+        this.posts = result.data.posts;
         this.posts.forEach((e) => {
           e.preview = sanitizeHtml(e.content, { allowedTags: [] });
         });
@@ -91,10 +91,10 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     axios
-      .get(`${apiPrefix}/users/history`)
+      .get(`${apiPrefix}/posts/recent`)
       .then((result) => {
         next((vm) => {
-          vm.posts = result.data.posts.reverse();
+          vm.posts = result.data.posts;
           vm.posts.forEach((e) => {
             e.preview = sanitizeHtml(e.content, { allowedTags: [] });
           });

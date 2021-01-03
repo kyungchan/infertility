@@ -16,6 +16,7 @@ const TestList = () => import("..//views/TestList.vue");
 const Login = () => import("../views/Login");
 const Register = () => import("../views/Register");
 const History = () => import("../views/Feed/History");
+const Recent = () => import("../views/Feed/Recent");
 const Likes = () => import("../views/Feed/Like");
 const Mypage = () => import("../views/Mypage");
 const Search = () => import("../views/Search");
@@ -99,6 +100,11 @@ const routes = [
   {
     path: "/history",
     component: History,
+    meta: { loginRequired: true },
+  },
+  {
+    path: "/recent",
+    component: Recent,
     meta: { loginRequired: true },
   },
   {

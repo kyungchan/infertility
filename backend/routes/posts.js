@@ -59,6 +59,26 @@ router.get("/search", function (req, res) {
       res.sendStatus(400);
     });
 });
+router.get("/recent", function (req, res) {
+  const page = req.query.page || 1;
+  boardModel
+    .find({
+      createdAt: {
+        $gte: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 7일전
+      },
+    })
+    .sort({ createdAt: -1 })
+    .skip(10 * (page - 1))
+    .limit(10)
+    .then((result) => {
+      console.log(result);
+      res.status(200).json({ posts: result });
+    })
+    .catch((err) => {
+      console.log(tag, err);
+      res.sendStatus(400);
+    });
+});
 
 router.get("/:boardCode", function (req, res) {
   const page = req.query.page || 1;

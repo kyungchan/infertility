@@ -84,13 +84,13 @@
         <v-list-item v-if="this.userRule">
           <v-row class="caption">
             <v-col cols="4" class="pa-0 text-center">
-              <v-list-item link to="/history" class="pt-3 d-block">
+              <v-list-item link to="/recent" class="pt-3 d-block">
                 <v-icon size="30" color="">mdi-history</v-icon>
                 <div>최근 게시글</div>
               </v-list-item>
             </v-col>
             <v-col cols="4" class="pa-0 text-center">
-              <v-list-item link class="pt-3 d-block">
+              <v-list-item link to="/history" class="pt-3 d-block">
                 <!--slot can be any component-->
                 <v-icon size="30" color=""
                   >mdi-book-open-page-variant-outline
