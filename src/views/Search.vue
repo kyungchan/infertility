@@ -123,7 +123,6 @@ export default {
   },
   methods: {
     onPageChange(page) {
-      console.log(this.qury);
       this.$router.push(`${this.$route.path}?query=${this.query}&page=${page}`);
     },
   },

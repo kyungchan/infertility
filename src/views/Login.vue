@@ -77,8 +77,7 @@ export default {
             this.$router.push("/");
           }
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.loginError = true;
           this.$refs.signInForm.validate();
           this.loginError = false;

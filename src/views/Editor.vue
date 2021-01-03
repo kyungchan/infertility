@@ -325,8 +325,7 @@ export default {
           this.content = result.data.content;
           this.editor.setContent(result.data.content);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.$router.replace("/error");
         });
     }
@@ -336,7 +335,6 @@ export default {
   },
   methods: {
     showImagePrompt(command) {
-      console.log(command);
       const input = document.createElement("input");
       input.type = "file";
       input.accept = "image/*";
@@ -352,7 +350,7 @@ export default {
             command({ src: `${apiPrefix}/images/${result.data}` });
           })
           .catch((err) => {
-            console.log(err);
+            this.$router.replace("/error");
           });
       };
     },
@@ -373,8 +371,8 @@ export default {
             .then(() => {
               this.$router.replace(`.`);
             })
-            .catch((err) => {
-              console.log(err);
+            .catch(() => {
+              this.$router.replace("/error");
             });
         } else {
           this.$axios
@@ -385,8 +383,8 @@ export default {
             .then((result) => {
               this.$router.replace(`./${result.data._id}`);
             })
-            .catch((err) => {
-              console.log(err);
+            .catch(() => {
+              this.$router.replace("/error");
             });
         }
       }

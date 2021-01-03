@@ -326,8 +326,8 @@ export default {
 
           fileLink.click();
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          this.$router.replace("/error");
         });
     },
     onPdfDownload(answer) {
@@ -354,8 +354,7 @@ export default {
             this.$moment(answer.createdAt).format("YYMMDD-HHmmss")
           );
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.$router.replace("/error");
         });
     },
