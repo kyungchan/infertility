@@ -19,21 +19,22 @@
               읽은 글이 없습니다.
             </div>
 
-            <li v-for="post in posts" :key="post._id">
-              <v-slide-y-reverse-transition
-                appear
-                hide-on-leave
-                duration="1000"
-              >
-                <list-item
-                  :link="`/boards/${post.boardCode}/${post._id}`"
-                  :subtitle="boards[post.boardCode].name"
-                  :title="post.title"
-                  :content="post.preview"
-                  :color="boards[post.boardCode].color"
-                  :postId="post._id"
-                ></list-item>
-              </v-slide-y-reverse-transition>
+            <li v-for="post in posts" :key="post.origin">
+              <list-item
+                v-if="post._id"
+                :link="`/boards/${post.boardCode}/${post._id}`"
+                :subtitle="boards[post.boardCode].name"
+                :title="post.title"
+                :content="post.preview"
+                :color="boards[post.boardCode].color"
+                :postId="post._id"
+              ></list-item>
+              <list-item
+                v-else
+                :deleted="true"
+                :postId="post.origin"
+                like="/"
+              ></list-item>
             </li>
           </ul>
         </v-card-text>
@@ -86,7 +87,11 @@ export default {
       .then((result) => {
         this.posts = result.data.posts ? result.data.posts.reverse() : [];
         this.posts.forEach((e) => {
-          e.preview = sanitizeHtml(e.content, { allowedTags: [] });
+          try {
+            e.preview = sanitizeHtml(e.content, { allowedTags: [] });
+          } catch (error) {
+            error;
+          }
         });
         this.total = result.data.total;
         this.page = to.query.page * 1 || 1;
@@ -109,7 +114,11 @@ export default {
           vm.total = result.data.total;
           vm.posts = result.data.posts ? result.data.posts.reverse() : [];
           vm.posts.forEach((e) => {
-            e.preview = sanitizeHtml(e.content, { allowedTags: [] });
+            try {
+              e.preview = sanitizeHtml(e.content, { allowedTags: [] });
+            } catch (error) {
+              error;
+            }
           });
         });
       })

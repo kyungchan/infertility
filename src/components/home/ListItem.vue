@@ -1,6 +1,27 @@
 <!-- 홈 화면 게시글 리스트의 한 요소 -->
 <template>
-  <router-link :to="link" class="text-decoration-none">
+  <v-alert
+    v-if="deleted"
+    tile
+    border="left"
+    elevation="0"
+    class="py-0 pr-0"
+    colored-border
+  >
+    <div class="pt-5">삭제된 게시글입니다.</div>
+    <v-row class="mx-0">
+      <v-spacer></v-spacer>
+      <v-btn
+        v-if="postId"
+        @click.prevent="onLike"
+        :color="like ? 'red' : ''"
+        icon
+      >
+        <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
+      </v-btn>
+    </v-row>
+  </v-alert>
+  <router-link v-else :to="link" class="text-decoration-none">
     <v-alert
       tile
       colored-border
@@ -56,7 +77,16 @@ export default {
   data: () => ({
     like: false,
   }),
-  props: ["color", "title", "date", "link", "content", "subtitle", "postId"],
+  props: [
+    "color",
+    "title",
+    "date",
+    "link",
+    "content",
+    "subtitle",
+    "postId",
+    "deleted",
+  ],
 };
 </script>
 

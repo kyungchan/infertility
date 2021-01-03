@@ -79,14 +79,14 @@ router.get("/likes", function (req, res) {
                 from: "posts",
                 localField: "likes",
                 foreignField: "_id",
-                as: "likes",
+                as: "join",
               },
             },
           ])
           .then((result) => {
             let resultLikes = [];
             result.forEach((e) => {
-              resultLikes.push(e.likes[0]);
+              resultLikes.push({ origin: e.likes, ...e.join[0] });
             });
             console.log(resultLikes);
             res.status(200).json({
@@ -211,15 +211,16 @@ router.get("/history", function (req, res) {
               from: "posts",
               localField: "history",
               foreignField: "_id",
-              as: "history",
+              as: "join",
             },
           },
         ])
         .then((result) => {
           let resultHistory = [];
           result.forEach((e) => {
-            resultHistory.push(e.history[0]);
+            resultHistory.push({ origin: e.history, ...e.join[0] });
           });
+          console.log(resultHistory);
           res.status(200).json({
             posts: resultHistory,
             total: result[0].total,

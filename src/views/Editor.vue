@@ -137,14 +137,6 @@
             </button>
             <button
               class="menubar__button"
-              :class="{ 'is-active': isActive.paragraph() }"
-              @click="commands.paragraph"
-            >
-              <v-icon>mdi-format-paragraph</v-icon>
-            </button>
-
-            <button
-              class="menubar__button"
               :class="{ 'is-active': isActive.heading({ level: 1 }) }"
               @click="commands.heading({ level: 1 })"
             >
