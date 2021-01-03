@@ -137,14 +137,6 @@
             </button>
             <button
               class="menubar__button"
-              :class="{ 'is-active': isActive.paragraph() }"
-              @click="commands.paragraph"
-            >
-              <v-icon>mdi-format-paragraph</v-icon>
-            </button>
-
-            <button
-              class="menubar__button"
               :class="{ 'is-active': isActive.heading({ level: 1 }) }"
               @click="commands.heading({ level: 1 })"
             >
@@ -333,8 +325,7 @@ export default {
           this.content = result.data.content;
           this.editor.setContent(result.data.content);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.$router.replace("/error");
         });
     }
@@ -344,7 +335,6 @@ export default {
   },
   methods: {
     showImagePrompt(command) {
-      console.log(command);
       const input = document.createElement("input");
       input.type = "file";
       input.accept = "image/*";
@@ -359,8 +349,8 @@ export default {
           .then((result) => {
             command({ src: `${apiPrefix}/images/${result.data}` });
           })
-          .catch((err) => {
-            console.log(err);
+          .catch(() => {
+            this.$router.replace("/error");
           });
       };
     },
@@ -381,8 +371,8 @@ export default {
             .then(() => {
               this.$router.replace(`.`);
             })
-            .catch((err) => {
-              console.log(err);
+            .catch(() => {
+              this.$router.replace("/error");
             });
         } else {
           this.$axios
@@ -393,8 +383,8 @@ export default {
             .then((result) => {
               this.$router.replace(`./${result.data._id}`);
             })
-            .catch((err) => {
-              console.log(err);
+            .catch(() => {
+              this.$router.replace("/error");
             });
         }
       }

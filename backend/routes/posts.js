@@ -65,7 +65,7 @@ router.get("/recent", function (req, res) {
   boardModel
     .find({
       createdAt: {
-        $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000), // 7일전
+        $gte: new Date(new Date().getTime() - 15 * 24 * 60 * 60 * 1000), // 7일전
       },
     })
     .sort({ createdAt: -1 })

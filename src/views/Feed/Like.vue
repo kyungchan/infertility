@@ -18,22 +18,22 @@
             <div v-if="!likes.length" class="py-10 text-center">
               저장한 글이 없습니다.
             </div>
-
-            <li v-for="like in likes" :key="like._id">
-              <v-slide-y-reverse-transition
-                appear
-                hide-on-leave
-                duration="1000"
-              >
-                <list-item
-                  :link="`/boards/${like.boardCode}/${like._id}`"
-                  :subtitle="boards[like.boardCode].name"
-                  :title="like.title"
-                  :content="like.preview"
-                  :color="boards[like.boardCode].color"
-                  :postId="like._id"
-                ></list-item>
-              </v-slide-y-reverse-transition>
+            <li v-for="like in likes" :key="like.origin">
+              <list-item
+                v-if="like._id"
+                :link="`/boards/${like.boardCode}/${like._id}`"
+                :subtitle="boards[like.boardCode].name"
+                :title="like.title"
+                :content="like.preview"
+                :color="boards[like.boardCode].color"
+                :postId="like._id"
+              ></list-item>
+              <list-item
+                v-else
+                :deleted="true"
+                :postId="like.origin"
+                like="/"
+              ></list-item>
             </li>
           </ul>
         </v-card-text>
