@@ -349,7 +349,7 @@ export default {
           .then((result) => {
             command({ src: `${apiPrefix}/images/${result.data}` });
           })
-          .catch((err) => {
+          .catch(() => {
             this.$router.replace("/error");
           });
       };
