@@ -3,6 +3,7 @@ const router = express.Router();
 
 const boardModel = require("../odm/post");
 const auth = require("../modules/authorization.js");
+const boardInfo = require("../modules/boardInfo");
 
 const tag = "[posts.js]";
 
@@ -59,16 +60,15 @@ router.get("/search", function (req, res) {
       res.sendStatus(400);
     });
 });
+
 router.get("/recent", function (req, res) {
-  const page = req.query.page || 1;
   boardModel
     .find({
       createdAt: {
-        $gte: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 7일전
+        $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000), // 7일전
       },
     })
     .sort({ createdAt: -1 })
-    .skip(10 * (page - 1))
     .limit(10)
     .then((result) => {
       console.log(result);
@@ -137,6 +137,7 @@ router.post("/:boardCode", function (req, res) {
             boardCode: req.params.boardCode,
           })
           .then((result) => {
+            boardInfo.setRecentCount();
             res.status(201).json({ _id: result._id });
           })
           .catch((err) => {

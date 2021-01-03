@@ -176,9 +176,13 @@ export default {
   mounted() {
     this.like = this.getLike.includes(this.$route.params.postId);
     if (this.userRule) {
-      this.$axios.patch(`${apiPrefix}/users/history`, {
-        post: this.$route.params.postId,
-      });
+      this.$axios
+        .patch(`${apiPrefix}/users/history`, {
+          post: this.$route.params.postId,
+        })
+        .then((result) => {
+          this.$store.commit("setHistoryCount", result.data.count);
+        });
     }
     setTimeout(() => {
       this.$scrollTo.scrollTo(".topScroll", 800, {

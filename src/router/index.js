@@ -134,9 +134,14 @@ router.beforeEach(async (to, from, next) => {
   if (Vue.$cookies.get("userId")) {
     await axios
       .post(`${apiPrefix}/auth/refresh`)
-      .then((res) => {
-        store.commit("signIn", res.data.user);
+      .then(async (res) => {
+        store.commit("signIn", res.data);
         if (!store.state.likes.length) store.dispatch("getLikes"); // 좋아요한 글은 최초에만 가져옴
+        if (!store.state.historyCount) {
+          // 읽은 글 갯수는 최초에만 가져옴
+          let count = await axios.get(`${apiPrefix}/users/history/count`);
+          store.commit("setHistoryCount", count.data.count);
+        }
       })
       .catch(() => {
         store.commit("signOut");

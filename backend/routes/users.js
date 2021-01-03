@@ -145,6 +145,35 @@ router.post("/likes", function (req, res) {
     });
 });
 
+router.get("/history/count", function (req, res) {
+  auth
+    .decodeToken(req.cookies.token)
+    .then((decoded) => {
+      userModel
+        .aggregate([
+          { $match: { id: decoded.id } },
+          { $limit: 1 },
+          {
+            $project: {
+              total: { $size: "$history" },
+              id: 1,
+            },
+          },
+        ])
+        .then((result) => {
+          res.status(200).json({ count: result[0].total });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.sendStatus(400);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.sendStatus(401);
+    });
+});
+
 router.get("/history", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
@@ -191,7 +220,6 @@ router.get("/history", function (req, res) {
           result.forEach((e) => {
             resultHistory.push(e.history[0]);
           });
-          console.log(resultHistory);
           res.status(200).json({
             posts: resultHistory,
             total: result[0].total,
@@ -219,12 +247,13 @@ router.patch("/history", function (req, res) {
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       userModel
-        .updateOne(
+        .findOneAndUpdate(
           { id: decoded.id },
-          { $addToSet: { history: req.body.post } }
+          { $addToSet: { history: req.body.post } },
+          { projection: { history: 1 }, new: true }
         )
-        .then(() => {
-          res.sendStatus(201);
+        .then((result) => {
+          res.status(201).json({ count: result.history.length });
         })
         .catch((err) => {
           console.log(tag, err);

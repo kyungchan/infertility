@@ -11,16 +11,25 @@ export default new Vuex.Store({
     id: "",
     rule: "",
     likes: [],
+    recentCount: 0,
+    historyCount: 0,
   },
   mutations: {
     setLikes(state, likes) {
       state.likes = likes;
     },
+    setRecentCount(state, count) {
+      state.recentCount = count;
+    },
+    setHistoryCount(state, count) {
+      state.historyCount = count;
+    },
     signIn(state, user) {
-      state.id = user.id;
-      state.rule = user.rule;
-      state.uid = user.uid;
-      state.name = user.name;
+      state.id = user.user.id;
+      state.rule = user.user.rule;
+      state.uid = user.user.uid;
+      state.name = user.user.name;
+      state.recentCount = user.count.recent;
       Vue.$cookies.set("userId", user.id, "1h"); // 토큰과 같은 시간
     },
     signOut(state) {
@@ -28,6 +37,9 @@ export default new Vuex.Store({
       state.rule = "";
       state.uid = "";
       state.name = "";
+      state.likes = [];
+      state.recentCount = 0;
+      state.historyCount = 0;
       axios.post(`${apiPrefix}/auth/signout`);
       Vue.$cookies.remove("userId");
     },

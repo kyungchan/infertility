@@ -84,7 +84,7 @@ export default {
     axios
       .get(`${apiPrefix}/users/history?page=${to.query.page || 1}`)
       .then((result) => {
-        this.posts = result.data.posts.reverse();
+        this.posts = result.data.posts ? result.data.posts.reverse() : [];
         this.posts.forEach((e) => {
           e.preview = sanitizeHtml(e.content, { allowedTags: [] });
         });
@@ -107,7 +107,7 @@ export default {
         next((vm) => {
           vm.page = to.query.page * 1 || 1;
           vm.total = result.data.total;
-          vm.posts = result.data.posts.reverse();
+          vm.posts = result.data.posts ? result.data.posts.reverse() : [];
           vm.posts.forEach((e) => {
             e.preview = sanitizeHtml(e.content, { allowedTags: [] });
           });

@@ -73,7 +73,7 @@ export default {
         })
         .then((result) => {
           if (result.status == 200) {
-            this.$store.commit("signIn", result.data.user);
+            this.$store.commit("signIn", result.data);
             this.$router.push("/");
           }
         })
