@@ -149,24 +149,63 @@ router.get("/history", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
-      const page = 2;
+      const page = req.query.page || 1;
       userModel
-        .findOne(
-          { id: decoded.id },
+        .aggregate([
+          { $match: { id: decoded.id } },
+          { $limit: 1 },
           {
-            history: {
-              $slice: [-10 * page, 10],
+            $project: {
+              total: { $size: "$history" },
+              history: {
+                $slice: [
+                  "$history",
+                  -10 * page,
+                  {
+                    $cond: [
+                      { $gte: [{ $size: "$history" }, page * 10] },
+                      10,
+                      {
+                        $subtract: [{ $size: "$history" }, (page - 1) * 10],
+                      },
+                    ],
+                  },
+                ],
+              },
             },
-          }
-        )
-        .populate("history")
+          },
+          {
+            $unwind: { path: "$history", includeArrayIndex: "row" }, // lookup stage에서 망가지는 순서를 지키기위해
+          },
+          {
+            $lookup: {
+              from: "posts",
+              localField: "history",
+              foreignField: "_id",
+              as: "history",
+            },
+          },
+        ])
         .then((result) => {
-          console.log(result);
-          res.status(200).json({ posts: result.history });
+          let resultHistory = [];
+          result.forEach((e) => {
+            resultHistory.push(e.history[0]);
+          });
+          console.log(resultHistory);
+          res.status(200).json({
+            posts: resultHistory,
+            total: result[0].total,
+          });
         })
         .catch((err) => {
+          // 좋아요가 0개일때
+          if (err.code == 28729)
+            return res.status(200).json({
+              likes: [],
+              total: 0,
+            });
           console.log(err);
-          res.sendStatus(404);
+          res.sendStatus(200);
         });
     })
     .catch((err) => {

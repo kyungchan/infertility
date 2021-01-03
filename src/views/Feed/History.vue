@@ -38,6 +38,13 @@
           </ul>
         </v-card-text>
       </v-card>
+      <v-pagination
+        class="elevation-0"
+        v-model="page"
+        v-if="posts.length"
+        @input="onPageChange"
+        :length="parseInt(total / 10) + (total % 10 ? 1 : 0)"
+      ></v-pagination>
     </v-container>
   </div>
 </template>
@@ -52,6 +59,8 @@ const apiPrefix = process.env.NODE_ENV == "development" ? "/api" : ""; // produc
 export default {
   components: { ListItem },
   data: () => ({
+    page: 1,
+    total: 0,
     posts: [],
     boards: [
       { code: "0", name: "난임 정보 마당", color: "pink" },
@@ -73,12 +82,14 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     axios
-      .get(`${apiPrefix}/users/history`)
+      .get(`${apiPrefix}/users/history?page=${to.query.page || 1}`)
       .then((result) => {
         this.posts = result.data.posts.reverse();
         this.posts.forEach((e) => {
           e.preview = sanitizeHtml(e.content, { allowedTags: [] });
         });
+        this.total = result.data.total;
+        this.page = to.query.page * 1 || 1;
         this.$scrollTo.scrollTo(".topScroll", 800, {
           offset: -80,
           easing: [0.65, 0, 0.35, 1],
@@ -91,9 +102,11 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     axios
-      .get(`${apiPrefix}/users/history`)
+      .get(`${apiPrefix}/users/history?page=${to.query.page || 1}`)
       .then((result) => {
         next((vm) => {
+          vm.page = to.query.page * 1 || 1;
+          vm.total = result.data.total;
           vm.posts = result.data.posts.reverse();
           vm.posts.forEach((e) => {
             e.preview = sanitizeHtml(e.content, { allowedTags: [] });
@@ -105,6 +118,11 @@ export default {
           vm.$router.replace("/error");
         });
       });
+  },
+  methods: {
+    onPageChange(page) {
+      this.$router.push(`${this.$route.path}?page=${page}`);
+    },
   },
   computed: {
     userRule() {

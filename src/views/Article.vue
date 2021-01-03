@@ -43,12 +43,7 @@
             <v-icon left>mdi-file-find</v-icon>
             <span style="vertical-align: middle">{{ post.view }}</span>
             <v-spacer></v-spacer>
-            <v-btn
-              class="mt-n2"
-              @click.prevent="onLike"
-              :color="like ? 'red' : ''"
-              icon
-            >
+            <v-btn @click.prevent="onLike" :color="like ? 'red' : ''" icon>
               <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
             </v-btn>
             <v-menu offset-y v-if="userRule == 'admin'">
@@ -119,7 +114,6 @@ export default {
   components: { EditorContent },
   props: ["board"],
   data: () => ({ editor: null, post: {}, deleteDialog: false, like: false }),
-
   beforeRouteUpdate(to, from, next) {
     axios
       .get(`${apiPrefix}/posts/${to.params.id}/${to.params.postId}`)
@@ -151,7 +145,7 @@ export default {
       this.$axios
         .post(`${apiPrefix}/users/likes`, {
           set: !this.like,
-          postId: this.id,
+          postId: this.$route.params.postId,
         })
         .then(() => {
           this.like = !this.like;
@@ -180,18 +174,11 @@ export default {
     },
   },
   mounted() {
-    this.like = this.getLike.includes(this.id);
+    this.like = this.getLike.includes(this.$route.params.postId);
     if (this.userRule) {
-      this.$axios
-        .patch(`${apiPrefix}/users/history`, {
-          post: this.$route.params.postId,
-        })
-        .then((result) => {
-          console.log(result);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      this.$axios.patch(`${apiPrefix}/users/history`, {
+        post: this.$route.params.postId,
+      });
     }
     setTimeout(() => {
       this.$scrollTo.scrollTo(".topScroll", 800, {
