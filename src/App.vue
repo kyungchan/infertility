@@ -90,24 +90,48 @@
         <v-list-item v-if="this.userRule">
           <v-row class="caption">
             <v-col cols="4" class="pa-0 text-center">
-              <v-list-item link to="/history" class="pt-3 d-block">
-                <v-icon size="30" color="">mdi-history</v-icon>
+              <v-list-item link to="/recent" class="pt-3 d-block">
+                <v-badge
+                  :content="recentCount"
+                  :value="recentCount"
+                  bordered
+                  right
+                  overlap
+                  color="secondary"
+                >
+                  <v-icon size="30" color="">mdi-history</v-icon>
+                </v-badge>
                 <div>최근 게시글</div>
               </v-list-item>
             </v-col>
             <v-col cols="4" class="pa-0 text-center">
-              <v-list-item link class="pt-3 d-block">
+              <v-list-item link to="/history" class="pt-3 d-block">
                 <!--slot can be any component-->
-                <v-icon size="30" color=""
-                  >mdi-book-open-page-variant-outline
-                </v-icon>
+                <v-badge
+                  :content="historyCount"
+                  :value="historyCount"
+                  bordered
+                  right
+                  overlap
+                  color="secondary"
+                >
+                  <v-icon size="30" color=""
+                    >mdi-book-open-page-variant-outline
+                  </v-icon>
+                </v-badge>
                 <div>읽은 게시글</div>
               </v-list-item>
             </v-col>
             <v-col cols="4" class="pa-0 text-center">
               <v-list-item link to="/likes" class="pt-3 d-block">
-                <v-badge bordered right overlap color="secondary">
-                  <span slot="badge">{{ this.likes.length }}</span>
+                <v-badge
+                  :content="likesCount"
+                  :value="likesCount"
+                  bordered
+                  right
+                  overlap
+                  color="secondary"
+                >
                   <!--slot can be any component-->
                   <v-icon size="30" color="">mdi-heart</v-icon>
                 </v-badge>
@@ -261,6 +285,15 @@ export default {
     },
     likes() {
       return this.$store.state.likes;
+    },
+    likesCount() {
+      return this.$store.state.likes.length;
+    },
+    recentCount() {
+      return this.$store.state.recentCount;
+    },
+    historyCount() {
+      return this.$store.state.historyCount;
     },
   },
 };

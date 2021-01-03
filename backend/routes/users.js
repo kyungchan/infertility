@@ -50,23 +50,29 @@ router.get("/likes", function (req, res) {
         userModel
           .aggregate([
             { $match: { id: decoded.id } },
+            { $limit: 1 },
             {
               $project: {
                 total: { $size: "$likes" },
                 likes: {
                   $slice: [
                     "$likes",
-                    -10 * (page - 1),
+                    -10 * page,
                     {
                       $cond: [
                         { $gte: [{ $size: "$likes" }, page * 10] },
                         10,
-                        { $subtract: [page * 10, { $size: "$likes" }] },
+                        {
+                          $subtract: [{ $size: "$likes" }, (page - 1) * 10],
+                        },
                       ],
                     },
                   ],
                 },
               },
+            },
+            {
+              $unwind: { path: "$likes", includeArrayIndex: "row" }, // lookup stage에서 망가지는 순서를 지키기위해
             },
             {
               $lookup: {
@@ -78,14 +84,24 @@ router.get("/likes", function (req, res) {
             },
           ])
           .then((result) => {
-            console.log(result);
+            let resultLikes = [];
+            result.forEach((e) => {
+              resultLikes.push(e.likes[0]);
+            });
+            console.log(resultLikes);
             res.status(200).json({
-              likes: result[0].likes,
+              likes: resultLikes,
               total: result[0].total,
             });
           })
           .catch((err) => {
             console.log(err);
+            // 좋아요가 0개일때
+            if (err.code == 28729)
+              return res.status(200).json({
+                likes: [],
+                total: 0,
+              });
             res.sendStatus(200);
           });
       else
@@ -129,19 +145,95 @@ router.post("/likes", function (req, res) {
     });
 });
 
-router.get("/history", function (req, res) {
+router.get("/history/count", function (req, res) {
   auth
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       userModel
-        .findOne({ id: decoded.id })
-        .populate("history")
+        .aggregate([
+          { $match: { id: decoded.id } },
+          { $limit: 1 },
+          {
+            $project: {
+              total: { $size: "$history" },
+              id: 1,
+            },
+          },
+        ])
         .then((result) => {
-          res.status(200).json({ posts: result.history });
+          res.status(200).json({ count: result[0].total });
         })
         .catch((err) => {
           console.log(err);
-          res.sendStatus(404);
+          res.sendStatus(400);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.sendStatus(401);
+    });
+});
+
+router.get("/history", function (req, res) {
+  auth
+    .decodeToken(req.cookies.token)
+    .then((decoded) => {
+      const page = req.query.page || 1;
+      userModel
+        .aggregate([
+          { $match: { id: decoded.id } },
+          { $limit: 1 },
+          {
+            $project: {
+              total: { $size: "$history" },
+              history: {
+                $slice: [
+                  "$history",
+                  -10 * page,
+                  {
+                    $cond: [
+                      { $gte: [{ $size: "$history" }, page * 10] },
+                      10,
+                      {
+                        $subtract: [{ $size: "$history" }, (page - 1) * 10],
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $unwind: { path: "$history", includeArrayIndex: "row" }, // lookup stage에서 망가지는 순서를 지키기위해
+          },
+          {
+            $lookup: {
+              from: "posts",
+              localField: "history",
+              foreignField: "_id",
+              as: "history",
+            },
+          },
+        ])
+        .then((result) => {
+          let resultHistory = [];
+          result.forEach((e) => {
+            resultHistory.push(e.history[0]);
+          });
+          res.status(200).json({
+            posts: resultHistory,
+            total: result[0].total,
+          });
+        })
+        .catch((err) => {
+          // 좋아요가 0개일때
+          if (err.code == 28729)
+            return res.status(200).json({
+              likes: [],
+              total: 0,
+            });
+          console.log(err);
+          res.sendStatus(200);
         });
     })
     .catch((err) => {
@@ -155,21 +247,13 @@ router.patch("/history", function (req, res) {
     .decodeToken(req.cookies.token)
     .then((decoded) => {
       userModel
-        .findOne({ id: decoded.id })
+        .findOneAndUpdate(
+          { id: decoded.id },
+          { $addToSet: { history: req.body.post } },
+          { projection: { history: 1 }, new: true }
+        )
         .then((result) => {
-          if (!result.history.includes(req.body.post)) {
-            result.history.push(req.body.post);
-            result
-              .save()
-              .then(() => {
-                res.sendStatus(201);
-              })
-              .catch((err) => {
-                throw err;
-              });
-          } else {
-            res.sendStatus(201);
-          }
+          res.status(201).json({ count: result.history.length });
         })
         .catch((err) => {
           console.log(tag, err);

@@ -33,11 +33,6 @@ userSchema.pre("save", function (next) {
         next(err);
       });
   }
-
-  if (user.isModified("history")) {
-    user.history = user.history.slice(-10);
-    next();
-  }
 });
 userSchema.methods.comparePassword = function (plainPassword, next) {
   bcrypt

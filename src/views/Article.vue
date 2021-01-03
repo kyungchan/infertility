@@ -43,12 +43,7 @@
             <v-icon left>mdi-file-find</v-icon>
             <span style="vertical-align: middle">{{ post.view }}</span>
             <v-spacer></v-spacer>
-            <v-btn
-              v-if="userRule"
-              @click.prevent="onLike"
-              :color="like ? 'red' : ''"
-              icon
-            >
+            <v-btn @click.prevent="onLike" :color="like ? 'red' : ''" icon>
               <v-icon>{{ like ? "mdi-heart" : "mdi-heart-outline" }}</v-icon>
             </v-btn>
             <v-menu offset-y v-if="userRule == 'admin'">
@@ -82,8 +77,10 @@
       </v-col>
 
       <v-col cols="12" class="py-0">
-        <v-divider class="my-4"></v-divider>
-        <editor-content :editor="editor" id="editor" />
+        <div class="editor ma-2 pb-5">
+          <v-divider class="my-4"></v-divider>
+          <editor-content class="editor__content px-3" :editor="editor" />
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -117,7 +114,6 @@ export default {
   components: { EditorContent },
   props: ["board"],
   data: () => ({ editor: null, post: {}, deleteDialog: false, like: false }),
-
   beforeRouteUpdate(to, from, next) {
     axios
       .get(`${apiPrefix}/posts/${to.params.id}/${to.params.postId}`)
@@ -178,17 +174,14 @@ export default {
     },
   },
   mounted() {
+    this.like = this.getLike.includes(this.$route.params.postId);
     if (this.userRule) {
-      this.like = this.getLike.includes(this.$route.params.postId);
       this.$axios
         .patch(`${apiPrefix}/users/history`, {
           post: this.$route.params.postId,
         })
         .then((result) => {
-          console.log(result);
-        })
-        .catch((err) => {
-          console.log(err);
+          this.$store.commit("setHistoryCount", result.data.count);
         });
     }
     setTimeout(() => {
@@ -206,7 +199,6 @@ export default {
           showOnlyWhenEditable: true,
           showOnlyCurrent: true,
         }),
-        new Image(),
         new Blockquote(),
         new BulletList(),
         new CodeBlock(),
@@ -217,7 +209,8 @@ export default {
         new OrderedList(),
         new TodoItem(),
         new TodoList(),
-        new Link({ rel: "noopener noreferrer nofollow", target: "_blank" }),
+        new Image(),
+        new Link({ rel: "", target: "_blank" }),
         new Bold(),
         new Code(),
         new Italic(),
@@ -235,23 +228,12 @@ export default {
 };
 </script>
 
-<style lang="scss" src="@/assets/sass/main.scss"></style>
-<style>
-#title {
-  word-break: keep-all;
-}
-</style>
-
-<style scoped>
-.hide-btn-afterimage:before {
-  background-color: initial;
-}
-</style>
-
 <style lang="scss">
-#editor img {
-  max-width: 100%;
+.editor {
+  @import "@/assets/sass/main.scss";
 }
+</style>
+<style lang="scss">
 .editor p.is-editor-empty:first-child::before {
   content: attr(data-empty-text);
   float: left;
@@ -261,7 +243,6 @@ export default {
   font-style: italic;
 }
 </style>
-
 <style lang="scss" scoped>
 .icon {
   position: relative;

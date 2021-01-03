@@ -3,6 +3,7 @@ const router = express.Router();
 
 const auth = require("../modules/authorization.js");
 const userModel = require("../odm/user.js");
+const boardInfo = require("../modules/boardInfo");
 
 router.post("/check", function (req, res) {
   auth
@@ -46,6 +47,9 @@ router.post("/refresh", function (req, res) {
                 uid: decoded.uid,
                 name: decoded.name,
               },
+              count: {
+                recent: boardInfo.getRecentCount(),
+              },
             });
         })
         .catch((err) => {
@@ -77,7 +81,7 @@ router.post("/signin", function (req, res) {
               uid: user._id,
               name: user.name,
             })
-            .then((token) => {
+            .then(async (token) => {
               res
                 .cookie("token", token, {
                   maxAge: 7200000,
@@ -90,6 +94,9 @@ router.post("/signin", function (req, res) {
                     rule: user.rule,
                     uid: user._id,
                     name: user.name,
+                  },
+                  count: {
+                    recent: boardInfo.getRecentCount(),
                   },
                 });
             })
